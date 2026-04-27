@@ -6,14 +6,19 @@
 // the resulting savings on billed tokens — that's how the compositor
 // actually scores work.
 
+// Pricing in USD per 1M tokens (input/output) — fresh as of April 2026.
+// Quality is a coarse benchmark composite (1.0 = state of the art).
 const ARMS = [
-  { name: "gemini-flash-1.5",  tier: "cheap" },
-  { name: "qwen-local-7b",     tier: "cheap" },
-  { name: "deepseek-v3",       tier: "cheap" },
-  { name: "claude-haiku-4-5",  tier: "mid"   },
-  { name: "claude-sonnet-4-6", tier: "mid"   },
-  { name: "claude-opus-4-7",   tier: "reasoning" }
+  { name: "gemini-2.5-flash",  tier: "cheap",     in: 0.15, out: 0.60, q: 0.74 },
+  { name: "qwen-local-7b",     tier: "local",     in: 0,    out: 0,    q: 0.62 },
+  { name: "deepseek-v3",       tier: "cheap",     in: 0.27, out: 1.10, q: 0.78 },
+  { name: "claude-haiku-4-5",  tier: "mid",       in: 1,    out: 5,    q: 0.84 },
+  { name: "claude-sonnet-4-6", tier: "mid",       in: 3,    out: 15,   q: 0.92 },
+  { name: "claude-opus-4-7",   tier: "reasoning", in: 5,    out: 25,   q: 0.96 }
 ];
+
+// Auto-replay delay after the `complete` event fires.
+const REPLAY_DELAY_MS = 3500;
 
 const stages = {
   ingest:    document.getElementById("stage-ingest"),
@@ -30,9 +35,15 @@ const execLog     = document.getElementById("exec-log");
 const swuEl       = document.getElementById("swu-indicator");
 const savingsFill = document.getElementById("savings-fill");
 const savingsLbl  = document.getElementById("savings-label");
+const qualityLbl  = document.getElementById("quality-label");
+const rejectedEl  = document.getElementById("rejected-line");
+const nextRunEl   = document.getElementById("next-run");
 const clockEl     = document.getElementById("clock");
+const clockBtn    = document.getElementById("btn-clock");
 const btnReplay   = document.getElementById("btn-replay");
-const btnPause    = document.getElementById("btn-pause");
+
+let replayTimer = null;
+let countdownTicker = null;
 
 let timers = [];
 let paused = false;
@@ -79,7 +90,7 @@ function drainQueue(stage) {
 renderArms(null);
 
 btnReplay.addEventListener("click", () => start());
-btnPause.addEventListener("click", () => togglePause());
+clockBtn.addEventListener("click", () => togglePause());
 
 start();
 
@@ -88,6 +99,7 @@ async function start() {
   const events = await loadEvents();
   startedAt = performance.now();
   startClock();
+  setClockState("running");
   for (const evt of events) {
     timers.push(setTimeout(() => handleEvent(evt), evt.ts));
   }
@@ -96,9 +108,11 @@ async function start() {
 function reset() {
   timers.forEach(clearTimeout);
   timers = [];
+  if (replayTimer) { clearTimeout(replayTimer); replayTimer = null; }
+  if (countdownTicker) { clearInterval(countdownTicker); countdownTicker = null; }
   paused = false;
   pauseAt = 0;
-  btnPause.textContent = "pause";
+  setClockState("idle");
   stopClock();
   clockEl.textContent = "00:00.000";
 
@@ -116,7 +130,15 @@ function reset() {
   swuEl.className = "v swu";
   if (savingsFill) savingsFill.style.width = "0%";
   if (savingsLbl)  savingsLbl.textContent = "savings —";
+  if (qualityLbl)  qualityLbl.textContent = "quality —";
+  if (rejectedEl)  rejectedEl.textContent = "—";
+  if (nextRunEl)   nextRunEl.textContent = "—";
   renderArms(null);
+}
+
+function setClockState(state) {
+  clockBtn.classList.remove("running", "paused", "done", "idle");
+  if (state) clockBtn.classList.add(state);
 }
 
 async function loadEvents() {
@@ -130,16 +152,24 @@ async function loadEvents() {
 }
 
 function togglePause() {
+  // If we're in the post-complete cooldown waiting for the auto-replay,
+  // pause cancels it; resume restarts immediately.
+  if (replayTimer) {
+    clearTimeout(replayTimer);
+    replayTimer = null;
+    start();
+    return;
+  }
   if (!paused) {
     paused = true;
     pauseAt = performance.now() - startedAt;
     timers.forEach(clearTimeout);
     timers = [];
-    btnPause.textContent = "resume";
+    setClockState("paused");
     stopClock();
   } else {
     paused = false;
-    btnPause.textContent = "pause";
+    setClockState("running");
     loadEvents().then(events => {
       const remaining = events.filter(e => e.ts >= pauseAt);
       startedAt = performance.now() - pauseAt;
@@ -244,6 +274,10 @@ function onDecompose(evt) {
 function onRoute(evt) {
   activate(stages.route, "routing");
   fillFields(stages.route, evt);
+  if (rejectedEl) {
+    const rej = evt.rejected && evt.rejected[0];
+    rejectedEl.textContent = rej ? `${rej.arm} — ${rej.why}` : "—";
+  }
   renderArms(evt);
   pulseConnector(2);
 }
@@ -269,12 +303,16 @@ function onExecute(evt) {
 
 function onReward(evt) {
   activate(stages.reward, "scoring");
+  const costSplit = evt.cost_actual_usd != null && evt.cost_baseline_all_opus_usd != null
+    ? `$${evt.cost_actual_usd.toFixed(4)}  ·  baseline $${evt.cost_baseline_all_opus_usd.toFixed(4)}`
+    : "—";
   fillFields(stages.reward, {
     batch_share: pct(evt.batch_share),
     stack_depth_max: evt.stack_depth_max,
     own_cache_hits: evt.own_cache_hits,
     provider_cache_hits: evt.provider_cache_hits,
     reward_score: (evt.reward_score ?? 0).toFixed(2),
+    cost_split: costSplit,
     tokens_split: `${formatTokens(evt.tokens_reused)} reused · ${formatTokens(evt.tokens_billed)} billed`
   });
   if (evt.swu) {
@@ -285,11 +323,25 @@ function onReward(evt) {
     swuEl.className = "v swu escalated";
   }
   if (savingsFill) {
+    const savings = (evt.savings_pct != null) ? evt.savings_pct
+      : (evt.cost_baseline_all_opus_usd ? 1 - (evt.cost_actual_usd / evt.cost_baseline_all_opus_usd) : 0);
     requestAnimationFrame(() => {
-      savingsFill.style.width = `${(evt.savings_pct || 0) * 100}%`;
+      savingsFill.style.width = `${savings * 100}%`;
     });
   }
-  if (savingsLbl) savingsLbl.textContent = `savings ${pct(evt.savings_pct)} vs no-stack baseline`;
+  if (savingsLbl) {
+    const x = evt.cost_savings_x != null
+      ? `${evt.cost_savings_x.toFixed(1)}× cheaper than all-Opus`
+      : `savings ${pct(evt.savings_pct)} vs baseline`;
+    savingsLbl.textContent = x;
+  }
+  if (qualityLbl) {
+    if (evt.quality_actual != null && evt.quality_baseline_all_opus != null) {
+      qualityLbl.textContent = `quality ${evt.quality_actual.toFixed(2)}  ·  Opus ${evt.quality_baseline_all_opus.toFixed(2)}  ·  −${pct(evt.quality_drop_pct)} for the win`;
+    } else {
+      qualityLbl.textContent = "quality —";
+    }
+  }
 
   pulseConnector(3);
   setTimeout(() => complete(stages.reward, "scored"), 1200);
@@ -301,13 +353,55 @@ function onComplete(evt) {
   fillFields(stages.complete, evt);
   setTimeout(() => complete(stages.complete, "done"), 800);
   setTimeout(() => connectors.forEach(c => c.classList.remove("active")), 1600);
+
+  // Stop the running clock so the timer doesn't tick up forever.
+  stopClock();
+  setClockState("done");
+
+  // Auto-replay after a short cooldown so the demo loops on its own.
+  scheduleReplay(REPLAY_DELAY_MS);
+}
+
+function scheduleReplay(delay) {
+  if (replayTimer) clearTimeout(replayTimer);
+  if (countdownTicker) clearInterval(countdownTicker);
+  const startAt = Date.now() + delay;
+  const updateCountdown = () => {
+    const remaining = Math.max(0, startAt - Date.now());
+    if (nextRunEl) {
+      nextRunEl.textContent = remaining > 0
+        ? `replays in ${Math.ceil(remaining / 1000)}s`
+        : "replaying…";
+    }
+  };
+  updateCountdown();
+  countdownTicker = setInterval(updateCountdown, 250);
+  replayTimer = setTimeout(() => {
+    clearInterval(countdownTicker);
+    countdownTicker = null;
+    replayTimer = null;
+    start();
+  }, delay);
 }
 
 function renderArms(evt) {
   armsRow.innerHTML = "";
+  // If this route event lists rejected arms, surface their UCB so users see
+  // the bandit downranking the expensive options.
+  const rejMap = new Map();
+  if (evt && evt.rejected) {
+    for (const r of evt.rejected) rejMap.set(r.arm, r.ucb);
+  }
   for (const arm of ARMS) {
     const isSel = !!(evt && arm.name === evt.arm);
-    const score = isSel ? evt.ucb_score : 0.4 + Math.random() * 0.4;
+    const rejUcb = rejMap.get(arm.name);
+    const score = isSel ? evt.ucb_score
+      : rejUcb != null ? rejUcb
+      : 0.4 + Math.random() * 0.4;
+    const costLabel = arm.in === 0 && arm.out === 0
+      ? "free · local"
+      : `$${arm.in}/${arm.out}·1M`;
+    const costClass = arm.in >= 5 ? "expensive" : arm.in <= 0.3 ? "cheap" : "";
     const div = document.createElement("div");
     div.className = "arm" + (isSel ? " selected" : "");
     div.innerHTML = `
@@ -317,8 +411,8 @@ function renderArms(evt) {
       </div>
       <div class="ucb-bar"><div class="ucb-fill"></div></div>
       <div class="arm-foot">
-        <span>ucb ${score.toFixed(2)}</span>
-        <span>${isSel && evt.lane ? evt.lane : ""}</span>
+        <span class="arm-cost ${costClass}">${costLabel}</span>
+        <span>q ${arm.q.toFixed(2)} · ucb ${score.toFixed(2)}</span>
       </div>
     `;
     armsRow.appendChild(div);

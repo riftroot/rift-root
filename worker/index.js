@@ -46,7 +46,7 @@ function wrapNoStore(res, version) {
 
 function manifestResponse() {
   const m = {
-    name: "rift · erebus edge",
+    name: "rift · compositor demo",
     short_name: "rift",
     start_url: "/",
     display: "standalone",
