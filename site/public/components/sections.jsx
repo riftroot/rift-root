@@ -63,7 +63,7 @@ function Thesis() {
             ]} />
         </ol>
 
-        <div className="thesis-callout" data-fade style={{ '--fade-delay': '480ms' }}>
+        <div className="thesis-callout">
           <span className="chip lime">AGENTIC-FIRST</span>
           <p className="thesis-callout-body display">
             The whole project is agentic-first — <em>no tacking on solutions
@@ -289,7 +289,7 @@ function StackStep({ n, tag, color, lines, metric, idx = 0 }) {
     <li
       className={`stack stack-${color}`}
       data-fade
-      style={{ '--fade-delay': (idx * 80) + 'ms' }}
+      style={{ '--fade-delay': (idx * 100) + 'ms' }}
     >
       <div className="stack-anchor">
         <span className="stack-num display">{n}</span>
@@ -438,7 +438,7 @@ function ErebusDiagram() {
             key={i}
             className={`ed-stage ed-${s.accent} ${s.kind ? 'ed-' + s.kind : ''}`}
             data-fade
-            style={{ '--fade-delay': (i * 90) + 'ms' }}
+            style={{ '--fade-delay': (i * 60) + 'ms' }}
           >
             <div className="ed-tag">{s.tag}</div>
             <div className="ed-card">

@@ -10,7 +10,7 @@ function Why() {
         <SectionHead num="04" name="Why this exists" meta="OPERATING INFRASTRUCTURE · NOT A PRODUCT" />
 
         <div className="why-hero">
-          <div className="why-frame" data-fade>
+          <div className="why-frame">
             <div className="chip violet why-chip">THE HONEST FRAME</div>
             <h2 className="display why-title">
               Erebus Edge is not for sale.<br/>
@@ -33,7 +33,7 @@ function Why() {
             </p>
           </div>
 
-          <div className="why-pitch card" data-fade style={{ '--fade-delay': '180ms' }}>
+          <div className="why-pitch card">
             <span className="corner tl" /><span className="corner tr" />
             <span className="corner bl" /><span className="corner br" />
             <div className="why-pitch-head">
@@ -92,7 +92,7 @@ function Posture({ k, v, c, idx = 0 }) {
     <div
       className={`posture posture-${c}`}
       data-fade
-      style={{ '--fade-delay': (idx * 90) + 'ms' }}
+      style={{ '--fade-delay': (idx * 100) + 'ms' }}
     >
       <span className={`posture-mark mark-${c}`} />
       <div>
@@ -113,7 +113,7 @@ function About() {
         <SectionHead num="05" name="About the operator" meta="ADAM · NORTHERN COLORADO" />
 
         <div className="rail-grid">
-          <div className="rail-prose about-prose" data-fade>
+          <div className="rail-prose about-prose">
             <p className="about-lede display">
               The thesis behind Rift Root is simple: the right system
               <em className="cyan"> absorbs the friction</em> so the operator does not have to.
@@ -175,12 +175,7 @@ function About() {
    info-density vocabulary into otherwise empty real estate. */
 function SideRail({ index, caption, data = [], stamp, accent = 'violet' }) {
   return (
-    <aside
-      className={`side-rail rail-${accent}`}
-      aria-hidden="true"
-      data-fade
-      style={{ '--fade-delay': '160ms' }}
-    >
+    <aside className={`side-rail rail-${accent}`} aria-hidden="true">
       <div className="rail-head">
         <span className="rail-index display">{index}</span>
         <span className="rail-caption">{caption}</span>
@@ -230,7 +225,7 @@ function Ask() {
         <SectionHead num="06" name="The ask" meta="RESOURCES THAT ACCELERATE" />
 
         <div className="ask-wrap">
-          <div className="ask-pitch" data-fade>
+          <div className="ask-pitch">
             <h2 className="display ask-title">
               Not seeking VC.<br/>
               Seeking <em className="cyan">resources that accelerate.</em>
@@ -251,7 +246,7 @@ function Ask() {
             </a>
           </div>
 
-          <div className="ask-list card" data-fade style={{ '--fade-delay': '180ms' }}>
+          <div className="ask-list card">
             <span className="corner tl" /><span className="corner tr" />
             <span className="corner bl" /><span className="corner br" />
             <div className="ask-list-head"><span className="chip violet">WHAT MOVES THE NEEDLE</span></div>
@@ -261,7 +256,7 @@ function Ask() {
                   key={i}
                   className="ask-line"
                   data-fade
-                  style={{ '--fade-delay': (300 + i * 70) + 'ms' }}
+                  style={{ '--fade-delay': (i * 60) + 'ms' }}
                 >
                   <span className={`ask-bullet bullet-${l.c}`} />
                   <span className="ask-k">{l.k}</span>
@@ -288,12 +283,12 @@ function Contact({ email = 'adam@riftroot.com' }) {
 
         <div className="contact-wrap">
           <div className="contact-channels">
-            <ContactRow idx={0} label="Email"    value={email} href={`mailto:${email}`} live />
-            <ContactRow idx={1} label="LinkedIn" value="building shortly" href="#contact" placeholder />
-            <ContactRow idx={2} label="GitHub"   value="building shortly" href="#contact" placeholder />
+            <ContactRow label="Email"    value={email} href={`mailto:${email}`} live />
+            <ContactRow label="LinkedIn" value="building shortly" href="#contact" placeholder />
+            <ContactRow label="GitHub"   value="building shortly" href="#contact" placeholder />
           </div>
 
-          <div className="contact-prose" data-fade style={{ '--fade-delay': '300ms' }}>
+          <div className="contact-prose">
             <p className="contact-prose-line">
               The right conversation shortens the loop.
             </p>
@@ -322,13 +317,11 @@ function Contact({ email = 'adam@riftroot.com' }) {
   );
 }
 
-function ContactRow({ label, value, href, live, placeholder, idx = 0 }) {
+function ContactRow({ label, value, href, live, placeholder }) {
   return (
     <a
       href={href}
       className={`contact-row ${placeholder ? 'is-placeholder' : ''}`}
-      data-fade
-      style={{ '--fade-delay': (idx * 90) + 'ms' }}
     >
       <span className="contact-label mono-label">{label}</span>
       <span className="contact-value">
