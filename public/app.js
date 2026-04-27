@@ -1,16 +1,18 @@
 // erebus edge · live demo
 //
-// consumes a structured event stream and animates the compositor pipeline.
-// uses a replay of events.json by default; swap `replay()` for an EventSource
-// against /api/erebus/stream when wired to annals-of-ankou.
+// Consumes a structured event stream and animates the compositor pipeline.
+// Reward is composition-based, not time-based: it surfaces batch-queue lane
+// share, own-cache hits, provider prompt-cache hits, max stack depth, and
+// the resulting savings on billed tokens — that's how the compositor
+// actually scores work.
 
 const ARMS = [
-  { name: "gemini-flash-1.5", tier: "cheap" },
-  { name: "qwen-local-7b",    tier: "cheap" },
-  { name: "deepseek-v3",      tier: "cheap" },
-  { name: "claude-haiku-4-5", tier: "mid"   },
-  { name: "claude-sonnet-4-6", tier: "mid"  },
-  { name: "claude-opus-4-7",  tier: "reasoning" }
+  { name: "gemini-flash-1.5",  tier: "cheap" },
+  { name: "qwen-local-7b",     tier: "cheap" },
+  { name: "deepseek-v3",       tier: "cheap" },
+  { name: "claude-haiku-4-5",  tier: "mid"   },
+  { name: "claude-sonnet-4-6", tier: "mid"   },
+  { name: "claude-opus-4-7",   tier: "reasoning" }
 ];
 
 const stages = {
@@ -20,20 +22,21 @@ const stages = {
   reward:    document.getElementById("stage-reward"),
   complete:  document.getElementById("stage-complete")
 };
-const connectors = document.querySelectorAll(".connector");
-const eventList  = document.getElementById("event-list");
-const armsRow    = document.getElementById("arms-row");
+const connectors  = document.querySelectorAll(".connector");
+const eventList   = document.getElementById("event-list");
+const armsRow     = document.getElementById("arms-row");
 const dagBranches = document.getElementById("dag-branches");
-const execLog    = document.getElementById("exec-log");
-const swuEl      = document.getElementById("swu-indicator");
-const clockEl    = document.getElementById("clock");
-const btnReplay  = document.getElementById("btn-replay");
-const btnPause   = document.getElementById("btn-pause");
+const execLog     = document.getElementById("exec-log");
+const swuEl       = document.getElementById("swu-indicator");
+const savingsFill = document.getElementById("savings-fill");
+const savingsLbl  = document.getElementById("savings-label");
+const clockEl     = document.getElementById("clock");
+const btnReplay   = document.getElementById("btn-replay");
+const btnPause    = document.getElementById("btn-pause");
 
 let timers = [];
 let paused = false;
 let pauseAt = 0;
-let resumeOffset = 0;
 let startedAt = 0;
 let clockTicker = null;
 
@@ -50,8 +53,7 @@ async function start() {
   startedAt = performance.now();
   startClock();
   for (const evt of events) {
-    const t = setTimeout(() => handleEvent(evt), evt.ts);
-    timers.push(t);
+    timers.push(setTimeout(() => handleEvent(evt), evt.ts));
   }
 }
 
@@ -60,7 +62,6 @@ function reset() {
   timers = [];
   paused = false;
   pauseAt = 0;
-  resumeOffset = 0;
   btnPause.textContent = "pause";
   stopClock();
   clockEl.textContent = "00:00.000";
@@ -75,7 +76,9 @@ function reset() {
   dagBranches.innerHTML = "";
   execLog.innerHTML = "";
   swuEl.textContent = "—";
-  swuEl.className = "swu";
+  swuEl.className = "v swu";
+  if (savingsFill) savingsFill.style.width = "0%";
+  if (savingsLbl)  savingsLbl.textContent = "savings —";
   renderArms(null);
 }
 
@@ -90,7 +93,6 @@ async function loadEvents() {
 }
 
 function togglePause() {
-  // demo replay is fire-and-forget timeouts; pause snapshots remaining and reschedules
   if (!paused) {
     paused = true;
     pauseAt = performance.now() - startedAt;
@@ -103,13 +105,10 @@ function togglePause() {
     btnPause.textContent = "pause";
     loadEvents().then(events => {
       const remaining = events.filter(e => e.ts >= pauseAt);
-      const adjustedStart = performance.now();
-      startedAt = adjustedStart - pauseAt;
+      startedAt = performance.now() - pauseAt;
       startClock();
       for (const evt of remaining) {
-        const delay = evt.ts - pauseAt;
-        const t = setTimeout(() => handleEvent(evt), delay);
-        timers.push(t);
+        timers.push(setTimeout(() => handleEvent(evt), evt.ts - pauseAt));
       }
     });
   }
@@ -118,16 +117,12 @@ function togglePause() {
 function startClock() {
   stopClock();
   clockTicker = setInterval(() => {
-    const ms = performance.now() - startedAt;
-    clockEl.textContent = formatClock(ms);
-  }, 33);
+    clockEl.textContent = formatClock(performance.now() - startedAt);
+  }, 50);
 }
 
 function stopClock() {
-  if (clockTicker) {
-    clearInterval(clockTicker);
-    clockTicker = null;
-  }
+  if (clockTicker) { clearInterval(clockTicker); clockTicker = null; }
 }
 
 function formatClock(ms) {
@@ -141,14 +136,13 @@ function formatClock(ms) {
 
 function handleEvent(evt) {
   appendEventToSidecar(evt);
-
   switch (evt.event) {
-    case "ingest":     return onIngest(evt);
-    case "decompose":  return onDecompose(evt);
-    case "route":      return onRoute(evt);
-    case "execute":    return onExecute(evt);
-    case "reward":     return onReward(evt);
-    case "complete":   return onComplete(evt);
+    case "ingest":    return onIngest(evt);
+    case "decompose": return onDecompose(evt);
+    case "route":     return onRoute(evt);
+    case "execute":   return onExecute(evt);
+    case "reward":    return onReward(evt);
+    case "complete":  return onComplete(evt);
   }
 }
 
@@ -166,15 +160,20 @@ function complete(stage, statusText = "done") {
 function fillFields(stage, evt) {
   for (const el of stage.querySelectorAll("[data-field]")) {
     const key = el.dataset.field;
-    if (evt[key] !== undefined) el.textContent = String(evt[key]);
+    if (evt[key] !== undefined && evt[key] !== null) el.textContent = String(evt[key]);
   }
+}
+
+function pulseConnector(idx) {
+  const c = connectors[idx];
+  if (c) c.classList.add("active");
 }
 
 function onIngest(evt) {
   activate(stages.ingest, "ingesting");
   fillFields(stages.ingest, evt);
   pulseConnector(0);
-  setTimeout(() => complete(stages.ingest, "ingested"), 600);
+  setTimeout(() => complete(stages.ingest, "ingested"), 1200);
 }
 
 function onDecompose(evt) {
@@ -185,11 +184,11 @@ function onDecompose(evt) {
     const node = document.createElement("div");
     node.className = "dag-node";
     node.textContent = name;
-    node.style.animationDelay = `${i * 60}ms`;
+    node.style.animationDelay = `${i * 120}ms`;
     dagBranches.appendChild(node);
   });
   pulseConnector(1);
-  setTimeout(() => complete(stages.decompose, "decomposed"), 800);
+  setTimeout(() => complete(stages.decompose, "decomposed"), 1400);
 }
 
 function onRoute(evt) {
@@ -200,12 +199,15 @@ function onRoute(evt) {
 }
 
 function onExecute(evt) {
+  const lane = evt.lane || "live";
+  const reused = evt.reused_tokens || 0;
+  const billed = Math.max(0, (evt.tokens_in || 0) + (evt.tokens_out || 0) - reused);
   const line = document.createElement("div");
   line.className = "exec-line";
   line.innerHTML = `
-    <span class="ok">${evt.status === "success" ? "✓" : "✗"} ${evt.status}</span>
-    <span class="name">${evt.subtask}</span>
-    <span class="lat">${evt.latency_ms}ms · ${evt.tokens}t</span>
+    <span class="ok">${evt.status === "success" ? "✓" : "✗"}</span>
+    <span class="name">${escapeHtml(evt.subtask)}<span class="lane-pill ${lane}">${lane}</span></span>
+    <span class="meta">${formatTokens(billed)}b · ${formatTokens(reused)}r</span>
   `;
   execLog.appendChild(line);
   execLog.scrollTop = execLog.scrollHeight;
@@ -218,52 +220,56 @@ function onExecute(evt) {
 function onReward(evt) {
   activate(stages.reward, "scoring");
   fillFields(stages.reward, {
-    cost_usd: `$${evt.cost_usd.toFixed(4)}`,
-    escalations: evt.escalations,
-    retries: evt.retries,
-    reward_score: evt.reward_score.toFixed(2)
+    batch_share: pct(evt.batch_share),
+    stack_depth_max: evt.stack_depth_max,
+    own_cache_hits: evt.own_cache_hits,
+    provider_cache_hits: evt.provider_cache_hits,
+    reward_score: (evt.reward_score ?? 0).toFixed(2),
+    tokens_split: `${formatTokens(evt.tokens_reused)} reused · ${formatTokens(evt.tokens_billed)} billed`
   });
   if (evt.swu) {
     swuEl.textContent = "✓ SWU";
-    swuEl.className = "swu success";
+    swuEl.className = "v swu success";
   } else {
-    swuEl.textContent = `✗ ${evt.escalations} esc`;
-    swuEl.className = "swu escalated";
+    swuEl.textContent = "non-SWU";
+    swuEl.className = "v swu escalated";
   }
+  if (savingsFill) {
+    requestAnimationFrame(() => {
+      savingsFill.style.width = `${(evt.savings_pct || 0) * 100}%`;
+    });
+  }
+  if (savingsLbl) savingsLbl.textContent = `savings ${pct(evt.savings_pct)} vs no-stack baseline`;
+
   pulseConnector(3);
-  setTimeout(() => complete(stages.reward, "scored"), 600);
-  // route stage also closes once reward arrives
+  setTimeout(() => complete(stages.reward, "scored"), 1200);
   complete(stages.route, "executed");
 }
 
 function onComplete(evt) {
   activate(stages.complete, "complete");
   fillFields(stages.complete, evt);
-  setTimeout(() => complete(stages.complete, "done"), 400);
-  setTimeout(() => connectors.forEach(c => c.classList.remove("active")), 800);
-}
-
-function pulseConnector(idx) {
-  const c = connectors[idx];
-  if (!c) return;
-  c.classList.add("active");
+  setTimeout(() => complete(stages.complete, "done"), 800);
+  setTimeout(() => connectors.forEach(c => c.classList.remove("active")), 1600);
 }
 
 function renderArms(evt) {
   armsRow.innerHTML = "";
   for (const arm of ARMS) {
+    const isSel = !!(evt && arm.name === evt.arm);
+    const score = isSel ? evt.ucb_score : 0.4 + Math.random() * 0.4;
     const div = document.createElement("div");
-    div.className = "arm" + (evt && arm.name === evt.arm ? " selected" : "");
-    const score = evt && arm.name === evt.arm
-      ? evt.ucb_score
-      : 0.4 + Math.random() * 0.4;
+    div.className = "arm" + (isSel ? " selected" : "");
     div.innerHTML = `
       <div class="arm-head">
-        <span class="arm-name">${arm.name}</span>
+        <span class="arm-name">${escapeHtml(arm.name)}</span>
         <span class="arm-tier">${arm.tier}</span>
       </div>
       <div class="ucb-bar"><div class="ucb-fill"></div></div>
-      <span class="arm-tier" style="text-align:right">ucb ${score.toFixed(2)}</span>
+      <div class="arm-foot">
+        <span>ucb ${score.toFixed(2)}</span>
+        <span>${isSel && evt.lane ? evt.lane : ""}</span>
+      </div>
     `;
     armsRow.appendChild(div);
     requestAnimationFrame(() => {
@@ -275,21 +281,43 @@ function renderArms(evt) {
 function appendEventToSidecar(evt) {
   const li = document.createElement("li");
   li.dataset.event = evt.event;
-  const ts = `+${String(evt.ts).padStart(5, "0")}ms`;
-  const body = summarize(evt);
-  li.innerHTML = `<span class="ev-ts">${ts}</span><span class="ev-body">${body}</span>`;
+  const ts = `+${(evt.ts / 1000).toFixed(1)}s`;
+  li.innerHTML = `<span class="ev-ts">${ts}</span><span class="ev-body">${summarize(evt)}</span>`;
   eventList.appendChild(li);
   eventList.scrollTop = eventList.scrollHeight;
 }
 
 function summarize(evt) {
   switch (evt.event) {
-    case "ingest":    return `<b>ingest</b> · ${evt.task} (${evt.subtasks} subtasks)`;
+    case "ingest":    return `<b>ingest</b> · ${escapeHtml(evt.task)} (${evt.subtasks})`;
     case "decompose": return `<b>decompose</b> · depth ${evt.dag_depth} · ${evt.parallel_branches} parallel`;
-    case "route":     return `<b>route</b> · ${evt.subtask} → <i>${evt.arm}</i> [${evt.tier}] ucb ${evt.ucb_score}`;
-    case "execute":   return `<b>execute</b> · ${evt.subtask} · ${evt.status} · ${evt.latency_ms}ms · ${evt.tokens}t`;
-    case "reward":    return `<b>reward</b> · ${evt.swu ? "SWU" : "non-SWU"} · $${evt.cost_usd.toFixed(4)} · score ${evt.reward_score}`;
-    case "complete":  return `<b>complete</b> · ${evt.artifact}`;
-    default:          return `<b>${evt.event}</b>`;
+    case "route": {
+      const cache = evt.cache_hit ? ` · <i>${escapeHtml(evt.cache_hit)}</i>` : "";
+      return `<b>route</b> · ${escapeHtml(evt.subtask)} → ${escapeHtml(evt.arm)} [${evt.lane || "live"}]${cache}`;
+    }
+    case "execute": {
+      const stack = (evt.stack || []).length ? ` · stack ${evt.stack.length}` : "";
+      return `<b>execute</b> · ${escapeHtml(evt.subtask)} · ${evt.lane || "live"}${stack}`;
+    }
+    case "reward":   return `<b>reward</b> · ${evt.swu ? "SWU" : "non-SWU"} · batch ${pct(evt.batch_share)} · save ${pct(evt.savings_pct)}`;
+    case "complete": return `<b>complete</b> · ${escapeHtml(evt.artifact)}`;
+    default:         return `<b>${evt.event}</b>`;
   }
+}
+
+function pct(n) {
+  if (n == null || isNaN(n)) return "—";
+  return `${Math.round(n * 100)}%`;
+}
+
+function formatTokens(n) {
+  if (n == null) return "0";
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
+  return String(n);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
 }
