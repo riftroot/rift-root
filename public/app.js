@@ -98,10 +98,15 @@ function viewportPause() {
 }
 
 function viewportResume() {
-  if (!viewportPausedAt) return;
-  viewportPausedAccum += performance.now() - viewportPausedAt;
-  viewportPausedAt = 0;
-  if (!paused && clockTicker) setClockState("running");
+  if (viewportPausedAt) {
+    viewportPausedAccum += performance.now() - viewportPausedAt;
+    viewportPausedAt = 0;
+  }
+  // Always restore visual running state on resume so the timer never gets
+  // stuck dim. Manual pause wins; complete state wins; otherwise running.
+  if (paused) return;
+  if (!clockTicker) return; // already stopped (complete fired)
+  setClockState("running");
 }
 
 renderArms(null);
@@ -150,11 +155,12 @@ function reset() {
   if (savingsLbl)  savingsLbl.textContent = "savings —";
   if (qualityLbl)  qualityLbl.textContent = "quality —";
   if (rejectedEl)  rejectedEl.textContent = "—";
+  armsRow.classList.remove("scored");
   renderArms(null);
 }
 
 function setClockState(state) {
-  clockBtn.classList.remove("running", "paused", "done", "idle");
+  clockBtn.classList.remove("running", "paused", "paused-viewport", "done", "idle");
   if (state) clockBtn.classList.add(state);
 }
 
@@ -361,6 +367,10 @@ function onReward(evt) {
   pulseConnector(3);
   setTimeout(() => complete(stages.reward, "scored"), 1200);
   complete(stages.route, "executed");
+  // Drop the per-arm highlight once a composite reward exists. The bandit's
+  // pick is no longer the visual headline — cost/quality/SWU/cache stack
+  // together drove the score.
+  armsRow.classList.add("scored");
 }
 
 function onComplete(evt) {

@@ -477,16 +477,51 @@ button { font: inherit; }
 
 /* ─────────────────────────────────────────────────────────── arms */
 
+.route-decision {
+  display: grid;
+  gap: var(--gap-2);
+  padding: var(--gap-3);
+  background: var(--surface-3);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+}
+
+.route-row {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: var(--gap-3);
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  word-break: break-word;
+}
+
+.route-row .muted { margin: 0; line-height: 1.4; }
+.route-row .v    { color: var(--ink); overflow-wrap: anywhere; }
+
+.arms-label, .exec-label {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+
 .arms-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--gap-2);
 }
 
+@media (min-width: 480px) {
+  .arms-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 768px) {
+  .arms-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
 .arm {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-2);
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 6px;
   padding: var(--gap-3);
   border-radius: var(--r-md);
   background: var(--surface-3);
@@ -496,14 +531,16 @@ button { font: inherit; }
   min-width: 0;
   transition:
     background var(--d) var(--ease),
-    border-color var(--d) var(--ease);
+    border-color var(--d) var(--ease),
+    opacity var(--d) var(--ease);
 }
 
 .arm-head {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   gap: var(--gap-2);
+  min-width: 0;
 }
 
 .arm-name {
@@ -512,14 +549,17 @@ button { font: inherit; }
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+  flex: 1;
 }
 
 .arm-tier {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--ink-mute);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .arm.selected {
@@ -528,6 +568,17 @@ button { font: inherit; }
 }
 
 .arm.selected .arm-name { color: var(--accent-bright); }
+
+/* After scoring, dim every arm and drop the highlight so the visual no
+ * longer implies the bandit's selection alone determined the reward —
+ * the reward is composite (cost + quality + SWU + cache stack). */
+.arms-row.scored .arm,
+.arms-row.scored .arm.selected {
+  opacity: 0.45;
+  background: var(--surface-3);
+  border-color: var(--border);
+}
+.arms-row.scored .arm.selected .arm-name { color: var(--ink); }
 
 .ucb-bar {
   height: 3px;
@@ -545,10 +596,20 @@ button { font: inherit; }
 }
 
 .arm-foot {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--gap-2);
   font-size: 10px;
   color: var(--ink-mute);
+  align-items: baseline;
+  min-width: 0;
+}
+
+.arm-foot > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .arm-cost {
@@ -709,8 +770,10 @@ button { font: inherit; }
 
 .event-list {
   list-style: none;
-  flex: 1 1 0;
-  min-height: 0;
+  /* Mobile: explicit, scrollable box so events are visible without
+   * relying on a flex parent height that can collapse to 0. */
+  height: 320px;
+  max-height: 60vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -719,12 +782,16 @@ button { font: inherit; }
   gap: var(--gap-2);
   font-family: var(--font-mono);
   font-size: var(--t-xs);
-  max-height: 50vh;
   padding-right: 4px;
 }
 
 @media (min-width: 1024px) {
-  .event-list { max-height: none; }
+  .event-list {
+    flex: 1 1 0;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+  }
 }
 
 .event-list li {

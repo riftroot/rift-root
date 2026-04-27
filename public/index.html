@@ -16,8 +16,8 @@
     <header class="topbar">
       <div class="topbar-inner">
         <a class="brand" href="/">
-          <img src="/brand/logo/make-this-connection-more-organic-like-roots-or-kn.svg" alt="rift" class="brand-mark" />
-          <span class="brand-name">rift</span>
+          <img src="/brand/logo/make-this-connection-more-organic-like-roots-or-kn.svg" alt="erebus" class="brand-mark" />
+          <span class="brand-name">erebus</span>
           <span class="brand-sub">compositor demo</span>
         </a>
         <div class="controls">
@@ -78,11 +78,19 @@
             <span class="stage-status">idle</span>
           </header>
           <div class="stage-body">
-            <div class="kv">
-              <span class="k">subtask</span><span class="v" data-field="subtask">—</span>
-              <span class="k">rejected</span><span class="v" id="rejected-line">—</span>
+            <div class="route-decision">
+              <div class="route-row">
+                <span class="muted">subtask</span>
+                <span class="v" data-field="subtask">—</span>
+              </div>
+              <div class="route-row">
+                <span class="muted">rejected</span>
+                <span class="v" id="rejected-line">—</span>
+              </div>
             </div>
+            <div class="muted arms-label">candidate arms · ucb = quality / cost · √explore</div>
             <div class="arms-row" id="arms-row"></div>
+            <div class="muted exec-label">execution log</div>
             <div class="exec-log" id="exec-log"></div>
           </div>
         </article>
@@ -162,7 +170,7 @@
     </main>
 
     <footer class="footer">
-      <span>rift &middot; compositor demo</span>
+      <span>erebus &middot; compositor demo</span>
     </footer>
 
     <div id="update-toast" class="update-toast">new version available · tap to reload</div>
