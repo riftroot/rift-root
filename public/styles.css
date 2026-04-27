@@ -96,10 +96,11 @@ body {
 }
 
 .brand-mark {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
-  background: var(--color-bg-elev);
+  display: block;
+  filter: drop-shadow(0 2px 8px oklch(from var(--color-primary-deep) l c h / 0.5));
 }
 
 .brand-meta {
