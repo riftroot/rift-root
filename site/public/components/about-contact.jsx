@@ -43,8 +43,8 @@ function Why() {
             <p className="why-pitch-body">
               A private AI execution mesh that routes LLM workloads across multi-vendor
               hardware using multi-armed bandit optimization. It is the operational
-              backbone for my consulting and systems work — not a product for sale,
-              but infrastructure I run myself.
+              backbone for systems work — not a product for sale, but infrastructure
+              I run myself.
             </p>
             <p className="why-pitch-body">
               Compute access accelerates the learning cycles of the MAB, which directly

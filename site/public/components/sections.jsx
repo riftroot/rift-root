@@ -338,24 +338,26 @@ function Erebus() {
         <div className="erebus-rule" />
 
         <div className="erebus-grid">
-          <Pillar n="α" color="violet" title="Reward Shaping"
-            body="Stacked MABs train on E2E SWU. Every task type, every model, every prompt path competes — the winners get reinforced, the losers get pruned."
-            tags={['MAB', 'E2E SWU', 'prompt-opt']} />
-          <Pillar n="β" color="cyan" title="Cache Topology"
-            body="Cache-in-model, local cache, queue cache. Batch-queued API calls with deduped fingerprints. The right answer never gets computed twice."
-            tags={['cache-in-model', 'local', 'batch-queue']} />
-          <Pillar n="γ" color="lime" title="Compositor Bandits"
-            body="X-driven work flows through compositor bandits that pick the best driven approach for each task class — and run shadow operations to explore variants before committing."
-            tags={['compositors', 'x-driven', 'shadow-ops']} />
-          <Pillar n="δ" color="cyan" title="Sandbox Validation"
-            body="Every output runs through an isolated sandbox before promotion. Self-healing kicks in on failure — re-route, re-prompt, re-decompose."
-            tags={['sandbox', 'self-healing', 'isolated']} />
-          <Pillar n="ε" color="violet" title="Horizontal Scale"
-            body="Cloud-native serverless workers, edge runtimes, ephemeral containers. Scale-to-zero on idle, scale to thousands on demand."
-            tags={['serverless', 'edge', '∞-scale']} />
-          <Pillar n="ζ" color="lime" title="Model-Agnostic"
-            body="No vendor lock. The bandit chooses what's cheapest-per-quality this minute. Tomorrow's model plugs in as a new arm."
-            tags={['multi-vendor', 'cost-opt', 'pluggable']} />
+          {[
+            { n: "α", color: "violet", title: "Reward Shaping",
+              body: "Stacked MABs train on E2E SWU. Every task type, every model, every prompt path competes — the winners get reinforced, the losers get pruned.",
+              tags: ["MAB", "E2E SWU", "prompt-opt"] },
+            { n: "β", color: "cyan", title: "Cache Topology",
+              body: "Cache-in-model, local cache, queue cache. Batch-queued API calls with deduped fingerprints. The right answer never gets computed twice.",
+              tags: ["cache-in-model", "local", "batch-queue"] },
+            { n: "γ", color: "lime", title: "Compositor Bandits",
+              body: "X-driven work flows through compositor bandits that pick the best driven approach for each task class — and run shadow operations to explore variants before committing.",
+              tags: ["compositors", "x-driven", "shadow-ops"] },
+            { n: "δ", color: "cyan", title: "Sandbox Validation",
+              body: "Every output runs through an isolated sandbox before promotion. Self-healing kicks in on failure — re-route, re-prompt, re-decompose.",
+              tags: ["sandbox", "self-healing", "isolated"] },
+            { n: "ε", color: "violet", title: "Horizontal Scale",
+              body: "Cloud-native serverless workers, edge runtimes, ephemeral containers. Scale-to-zero on idle, scale to thousands on demand.",
+              tags: ["serverless", "edge", "∞-scale"] },
+            { n: "ζ", color: "lime", title: "Model-Agnostic",
+              body: "No vendor lock. The bandit chooses what's cheapest-per-quality this minute. Tomorrow's model plugs in as a new arm.",
+              tags: ["multi-vendor", "cost-opt", "pluggable"] }
+          ].map((p, i) => <Pillar key={p.title} idx={i} {...p} />)}
         </div>
 
         <div className="erebus-callout card" data-fade>
@@ -372,9 +374,13 @@ function Erebus() {
   );
 }
 
-function Pillar({ n, title, body, tags, color = 'violet' }) {
+function Pillar({ n, title, body, tags, color = 'violet', idx = 0 }) {
   return (
-    <article className={`pillar card pillar-${color}`} data-fade>
+    <article
+      className={`pillar card pillar-${color}`}
+      data-fade
+      style={{ '--fade-delay': (idx * 80) + 'ms' }}
+    >
       <div className="pillar-head">
         <span className={`pillar-glyph display glyph-${color}`}>{n}</span>
         <h3 className="pillar-title">{title}</h3>
@@ -393,7 +399,7 @@ function ErebusDiagram() {
   const stages = [
     { tag: '01 / INGEST',    accent: 'cyan',
       title: 'Plan / spec ingest',
-      body:  'Compositor bandit thin-slices the input into structured tasks. Schema, priorities, blockers — all explicit. Ingestion is itself a bandit problem.' },
+      body:  'Plan or spec enters. Thin-sliced into tasks with explicit schema: relationships, priorities, blockers. No ambiguity reaches the executor.' },
     { tag: '02 / DECOMPOSE', accent: 'cyan',
       title: 'Task decomposition · DAG',
       body:  'Topology-aware. Parallel dispatch where the graph allows. Critical-path scoring decides what runs first.' },
@@ -426,7 +432,12 @@ function ErebusDiagram() {
     <div className="erebus-diagram-v2">
       <ol className="ed-stack">
         {stages.map((s, i) => (
-          <li key={i} className={`ed-stage ed-${s.accent} ${s.kind ? 'ed-' + s.kind : ''}`}>
+          <li
+            key={i}
+            className={`ed-stage ed-${s.accent} ${s.kind ? 'ed-' + s.kind : ''}`}
+            data-fade
+            style={{ '--fade-delay': (i * 90) + 'ms' }}
+          >
             <div className="ed-tag">{s.tag}</div>
             <div className="ed-card">
               <h4 className="ed-title">{s.title}</h4>
