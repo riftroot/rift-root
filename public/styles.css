@@ -460,8 +460,7 @@ button { font: inherit; }
   border: 1px solid var(--border);
   color: var(--ink);
   opacity: 0;
-  transform: translateY(4px);
-  animation: rise var(--d) var(--ease) forwards;
+  animation: fade-in 220ms var(--ease) forwards;
   white-space: nowrap;
 }
 
@@ -471,8 +470,8 @@ button { font: inherit; }
   color: var(--ok);
 }
 
-@keyframes rise {
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fade-in {
+  to { opacity: 1; }
 }
 
 /* ─────────────────────────────────────────────────────────── arms */
@@ -641,7 +640,7 @@ button { font: inherit; }
   align-items: center;
   padding: 4px 0;
   opacity: 0;
-  animation: rise var(--d) var(--ease) forwards;
+  animation: fade-in 220ms var(--ease) forwards;
 }
 
 .exec-line .ok { color: var(--ok); }
@@ -840,8 +839,7 @@ button { font: inherit; }
   background: var(--surface-2);
   border-left: 3px solid var(--accent);
   opacity: 0;
-  transform: translateX(8px);
-  animation: slide-in var(--d) var(--ease) forwards;
+  animation: fade-in 220ms var(--ease) forwards;
   min-width: 0;
 }
 
@@ -858,10 +856,6 @@ button { font: inherit; }
 .event-list li[data-event="reward"]   { border-left-color: var(--warn); }
 .event-list li[data-event="complete"] { border-left-color: var(--ok); }
 .event-list li[data-event="execute"]  { border-left-color: var(--accent-bright); }
-
-@keyframes slide-in {
-  to { opacity: 1; transform: translateX(0); }
-}
 
 /* ─────────────────────────────────────────────────────────── footer */
 
