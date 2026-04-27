@@ -2,8 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="theme-color" content="#100f10" />
     <title>rift · erebus edge demo</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/brand/logo/edit-only-the--oo--letterforms-in--root---all-othe.svg" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
@@ -139,6 +144,9 @@
       <span class="muted">vanilla html · sse-shaped replay · no build step</span>
     </footer>
 
+    <div id="update-toast" class="update-toast">new version available · tap to reload</div>
+
     <script src="/app.js" type="module"></script>
+    <script src="/cache-bust.js"></script>
   </body>
 </html>
