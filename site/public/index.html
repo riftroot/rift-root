@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Rift Root LLC — System of Systems · Workflow Accelerator</title>
+  <meta name="description" content="Rift Root LLC builds cost-optimized, model-agnostic task completion. Erebus Edge: stacked MAB systems for self-tuning software work." />
+  <meta name="theme-color" content="#0A0A0B" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="sections.css" />
+  <link rel="stylesheet" href="why.css" />
+
+  <style>
+    /* Client-side Turnstile gate. No server secret — once the managed
+       challenge resolves we just reveal the document body. Hostile bots
+       that ignore the widget still get a blank page until JS runs. */
+    #rr-gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #0A0A0B;
+      display: grid; place-items: center;
+      transition: opacity 320ms ease, visibility 0s linear 320ms;
+    }
+    #rr-gate.is-open { opacity: 0; visibility: hidden; pointer-events: none; }
+    #rr-gate .gate-card {
+      max-width: 360px; width: calc(100% - 32px);
+      padding: 28px 24px;
+      border: 1px solid #2a2a30;
+      border-radius: 14px;
+      background: #111118;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      text-align: center;
+      color: #e9e6ed;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+    }
+    #rr-gate h1 {
+      font-size: 13px; margin: 0 0 4px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: #b558d8;
+    }
+    #rr-gate p {
+      font-size: 11px; margin: 0 0 18px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #8a8595;
+    }
+    #rr-gate .gate-mark {
+      width: 56px; height: 56px; margin: 0 auto 14px;
+      display: block; border-radius: 8px;
+    }
+    #rr-gate .ts-host { display: flex; justify-content: center; min-height: 70px; }
+    #root { visibility: hidden; }
+    body.gate-open #root { visibility: visible; }
+  </style>
+</head>
+<body>
+  <div id="rr-gate" role="dialog" aria-label="human check">
+    <div class="gate-card">
+      <img class="gate-mark" src="assets/riftroot-logo.svg" alt="rift root" onerror="this.src='uploads/make-this-connection-more-organic-like-roots-or-kn.svg'" />
+      <h1>rift root</h1>
+      <p>human check &middot; cloudflare turnstile</p>
+      <div class="ts-host">
+        <div class="cf-turnstile"
+             data-sitekey="0x4AAAAAACw6w9OLbmLNAPPS"
+             data-theme="dark"
+             data-appearance="always"
+             data-callback="onRRGate"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="root"></div>
+
+  <script>
+    function onRRGate() {
+      var g = document.getElementById('rr-gate');
+      if (g) g.classList.add('is-open');
+      document.body.classList.add('gate-open');
+      try { sessionStorage.setItem('rr-gate', '1'); } catch (e) {}
+    }
+    try {
+      if (sessionStorage.getItem('rr-gate') === '1') onRRGate();
+    } catch (e) {}
+  </script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="components/header.jsx"></script>
+  <script type="text/babel" src="components/sections.jsx"></script>
+  <script type="text/babel" src="components/about-contact.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
