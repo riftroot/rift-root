@@ -34,36 +34,36 @@ function Thesis() {
         </div>
 
         <ol className="thesis-stack">
-          <StackStep n="01" tag="INGEST" color="cyan"
+          <StackStep idx={0} n="01" tag="INGEST" color="cyan"
             lines={[
               "Plan or spec enters. Thin-sliced into tasks with explicit schema:",
               "relationships, priorities, blockers. No ambiguity reaches the executor."
             ]} />
-          <StackStep n="02" tag="STORE" color="violet"
+          <StackStep idx={1} n="02" tag="STORE" color="violet"
             lines={[
               "Agentic-first task store. Not a ticketing tool.",
               "Self-healing. HITL escalation trends toward zero."
             ]} />
-          <StackStep n="03" tag="ROUTE" color="lime"
+          <StackStep idx={2} n="03" tag="ROUTE" color="lime"
             lines={[
               "MAB selects model × prompt path per task type.",
               "Cheap-tier first. Winners reinforce. Losers prune."
             ]}
             metric={{ label: 'cheap-tier first-pass · last 1,000 tasks', value: 94, suffix: '%' }} />
-          <StackStep n="04" tag="EXECUTE" color="cyan"
+          <StackStep idx={3} n="04" tag="EXECUTE" color="cyan"
             lines={[
               "Stateless workers. Edge runtimes. Sandboxed containers.",
               "Scale-to-zero on idle. Scale-to-thousands on demand.",
               "No warm-up cost. No idle billing."
             ]} />
-          <StackStep n="05" tag="CACHE" color="violet"
+          <StackStep idx={4} n="05" tag="CACHE" color="violet"
             lines={[
               "Right-sized context. No bloat. No rot.",
               "Nothing computed twice. Feeds back into ingest so the system remembers."
             ]} />
         </ol>
 
-        <div className="thesis-callout">
+        <div className="thesis-callout" data-fade style={{ '--fade-delay': '480ms' }}>
           <span className="chip lime">AGENTIC-FIRST</span>
           <p className="thesis-callout-body display">
             The whole project is agentic-first — <em>no tacking on solutions
@@ -284,9 +284,13 @@ function inputColor(c) {
   }
 }
 
-function StackStep({ n, tag, color, lines, metric }) {
+function StackStep({ n, tag, color, lines, metric, idx = 0 }) {
   return (
-    <li className={`stack stack-${color}`} data-fade>
+    <li
+      className={`stack stack-${color}`}
+      data-fade
+      style={{ '--fade-delay': (idx * 80) + 'ms' }}
+    >
       <div className="stack-anchor">
         <span className="stack-num display">{n}</span>
         <span className={`stack-tag chip ${color}`}>{tag}</span>
@@ -360,7 +364,7 @@ function Erebus() {
           ].map((p, i) => <Pillar key={p.title} idx={i} {...p} />)}
         </div>
 
-        <div className="erebus-callout card" data-fade>
+        <div className="erebus-callout card" data-fade style={{ '--fade-delay': '560ms' }}>
           <span className="corner tl" /><span className="corner tr" />
           <span className="corner bl" /><span className="corner br" />
           <div className="callout-label"><span className="chip violet">WHY IT MATTERS</span></div>
