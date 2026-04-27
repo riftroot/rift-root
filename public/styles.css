@@ -244,6 +244,13 @@ button { font: inherit; }
 .clock.paused .clock-pause { display: flex; }
 .clock.paused .clock-time  { opacity: 0.25; }
 
+/* Viewport-pause: clock freezes silently while waiting for a stage to scroll
+ * into view. No glow — that's reserved for explicit user pause. */
+.clock.paused-viewport .clock-time {
+  color: var(--ink-faint);
+  opacity: 0.7;
+}
+
 @keyframes pause-glow {
   0%, 100% { box-shadow: 0 0 0 0 rgba(181, 88, 216, 0.55); }
   50%      { box-shadow: 0 0 0 8px rgba(181, 88, 216, 0); }
@@ -676,13 +683,14 @@ button { font: inherit; }
   flex-direction: column;
   gap: var(--gap-3);
   min-width: 0;
+  min-height: 0;
 }
 
 @media (min-width: 1024px) {
   .sidecar {
     position: sticky;
     top: calc(var(--header-h) + 16px);
-    max-height: calc(100dvh - var(--header-h) - 32px);
+    height: calc(100dvh - var(--header-h) - 32px);
     overflow: hidden;
   }
 }
@@ -701,14 +709,18 @@ button { font: inherit; }
 
 .event-list {
   list-style: none;
-  flex: 1;
+  flex: 1 1 0;
+  min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: var(--gap-2);
   font-family: var(--font-mono);
   font-size: var(--t-xs);
   max-height: 50vh;
+  padding-right: 4px;
 }
 
 @media (min-width: 1024px) {

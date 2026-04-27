@@ -17,8 +17,6 @@ const ARMS = [
   { name: "claude-opus-4-7",   tier: "reasoning", in: 5,    out: 25,   q: 0.96 }
 ];
 
-// Auto-replay delay after the `complete` event fires.
-const REPLAY_DELAY_MS = 3500;
 
 const stages = {
   ingest:    document.getElementById("stage-ingest"),
@@ -37,19 +35,22 @@ const savingsFill = document.getElementById("savings-fill");
 const savingsLbl  = document.getElementById("savings-label");
 const qualityLbl  = document.getElementById("quality-label");
 const rejectedEl  = document.getElementById("rejected-line");
-const nextRunEl   = document.getElementById("next-run");
 const clockEl     = document.getElementById("clock");
 const clockBtn    = document.getElementById("btn-clock");
 const btnReplay   = document.getElementById("btn-replay");
-
-let replayTimer = null;
-let countdownTicker = null;
 
 let timers = [];
 let paused = false;
 let pauseAt = 0;
 let startedAt = 0;
 let clockTicker = null;
+
+// Viewport-driven clock pause. The displayed timer represents elapsed
+// *animation* time, so it freezes whenever events are queued waiting on a
+// stage to scroll into view, and resumes once every queue drains.
+let queueDepth = 0;
+let viewportPausedAt = 0;
+let viewportPausedAccum = 0;
 
 // Per-stage gating: stage-bound events queue here until ≥66% of the stage
 // is in the viewport, so users who scroll past don't miss the animation.
@@ -84,7 +85,23 @@ function drainQueue(stage) {
   const q = stageQueues.get(stage);
   if (!q || q.length === 0) return;
   const evts = q.splice(0, q.length);
-  for (const evt of evts) dispatchToStage(evt);
+  for (const evt of evts) {
+    queueDepth = Math.max(0, queueDepth - 1);
+    dispatchToStage(evt);
+  }
+  if (queueDepth === 0) viewportResume();
+}
+
+function viewportPause() {
+  if (paused || viewportPausedAt) return;
+  viewportPausedAt = performance.now();
+}
+
+function viewportResume() {
+  if (!viewportPausedAt) return;
+  viewportPausedAccum += performance.now() - viewportPausedAt;
+  viewportPausedAt = 0;
+  if (!paused && clockTicker) setClockState("running");
 }
 
 renderArms(null);
@@ -108,10 +125,11 @@ async function start() {
 function reset() {
   timers.forEach(clearTimeout);
   timers = [];
-  if (replayTimer) { clearTimeout(replayTimer); replayTimer = null; }
-  if (countdownTicker) { clearInterval(countdownTicker); countdownTicker = null; }
   paused = false;
   pauseAt = 0;
+  queueDepth = 0;
+  viewportPausedAt = 0;
+  viewportPausedAccum = 0;
   setClockState("idle");
   stopClock();
   clockEl.textContent = "00:00.000";
@@ -132,7 +150,6 @@ function reset() {
   if (savingsLbl)  savingsLbl.textContent = "savings —";
   if (qualityLbl)  qualityLbl.textContent = "quality —";
   if (rejectedEl)  rejectedEl.textContent = "—";
-  if (nextRunEl)   nextRunEl.textContent = "—";
   renderArms(null);
 }
 
@@ -152,14 +169,6 @@ async function loadEvents() {
 }
 
 function togglePause() {
-  // If we're in the post-complete cooldown waiting for the auto-replay,
-  // pause cancels it; resume restarts immediately.
-  if (replayTimer) {
-    clearTimeout(replayTimer);
-    replayTimer = null;
-    start();
-    return;
-  }
   if (!paused) {
     paused = true;
     pauseAt = performance.now() - startedAt;
@@ -184,7 +193,10 @@ function togglePause() {
 function startClock() {
   stopClock();
   clockTicker = setInterval(() => {
-    clockEl.textContent = formatClock(performance.now() - startedAt);
+    const now = performance.now();
+    const viewportFreeze = viewportPausedAt ? (now - viewportPausedAt) : 0;
+    const elapsed = (now - startedAt) - viewportPausedAccum - viewportFreeze;
+    clockEl.textContent = formatClock(elapsed);
   }, 50);
 }
 
@@ -212,6 +224,9 @@ function handleEvent(evt) {
     dispatchToStage(evt);
   } else {
     stageQueues.get(stage).push(evt);
+    queueDepth += 1;
+    viewportPause();
+    setClockState("paused-viewport");
   }
 }
 
@@ -354,34 +369,10 @@ function onComplete(evt) {
   setTimeout(() => complete(stages.complete, "done"), 800);
   setTimeout(() => connectors.forEach(c => c.classList.remove("active")), 1600);
 
-  // Stop the running clock so the timer doesn't tick up forever.
+  // Stop the running clock so the timer doesn't tick up forever. No auto
+  // replay — the user replays manually with the replay button.
   stopClock();
   setClockState("done");
-
-  // Auto-replay after a short cooldown so the demo loops on its own.
-  scheduleReplay(REPLAY_DELAY_MS);
-}
-
-function scheduleReplay(delay) {
-  if (replayTimer) clearTimeout(replayTimer);
-  if (countdownTicker) clearInterval(countdownTicker);
-  const startAt = Date.now() + delay;
-  const updateCountdown = () => {
-    const remaining = Math.max(0, startAt - Date.now());
-    if (nextRunEl) {
-      nextRunEl.textContent = remaining > 0
-        ? `replays in ${Math.ceil(remaining / 1000)}s`
-        : "replaying…";
-    }
-  };
-  updateCountdown();
-  countdownTicker = setInterval(updateCountdown, 250);
-  replayTimer = setTimeout(() => {
-    clearInterval(countdownTicker);
-    countdownTicker = null;
-    replayTimer = null;
-    start();
-  }, delay);
 }
 
 function renderArms(evt) {
