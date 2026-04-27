@@ -364,7 +364,7 @@ function Erebus() {
           ].map((p, i) => <Pillar key={p.title} idx={i} {...p} />)}
         </div>
 
-        <div className="erebus-callout card" data-fade style={{ '--fade-delay': '560ms' }}>
+        <div className="erebus-callout card">
           <span className="corner tl" /><span className="corner tr" />
           <span className="corner bl" /><span className="corner br" />
           <div className="callout-label"><span className="chip violet">WHY IT MATTERS</span></div>
@@ -378,13 +378,11 @@ function Erebus() {
   );
 }
 
-function Pillar({ n, title, body, tags, color = 'violet', idx = 0 }) {
+function Pillar({ n, title, body, tags, color = 'violet' }) {
+  // Intentionally NOT animated — the Erebus pillar grid stays static and
+  // always visible. These cards are the spec sheet, not a reveal.
   return (
-    <article
-      className={`pillar card pillar-${color}`}
-      data-fade
-      style={{ '--fade-delay': (idx * 80) + 'ms' }}
-    >
+    <article className={`pillar card pillar-${color}`}>
       <div className="pillar-head">
         <span className={`pillar-glyph display glyph-${color}`}>{n}</span>
         <h3 className="pillar-title">{title}</h3>
