@@ -11,14 +11,18 @@ cd "$(dirname "$0")/.."
 VERSION="${VERSION:-$(date +%s)}"
 echo "▶ deploying rift-bifrost-demo · VERSION=${VERSION}"
 
-if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+# Auth resolution order:
+#   1. Existing CLOUDFLARE_API_TOKEN env var (CI / explicit override)
+#   2. Wrangler OAuth session (~/.wrangler/config/default.toml from `wrangler login`)
+#   3. macOS keychain fallback (bifrost-bootstrap / CF_WORKERS_TOKEN)
+if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] && [ ! -f "$HOME/.wrangler/config/default.toml" ]; then
   CLOUDFLARE_API_TOKEN="$(security find-generic-password -s bifrost-bootstrap -a CF_WORKERS_TOKEN -w 2>/dev/null || true)"
   export CLOUDFLARE_API_TOKEN
-fi
-
-if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
-  echo "✘ CLOUDFLARE_API_TOKEN missing (not in env, not in keychain bifrost-bootstrap/CF_WORKERS_TOKEN)" >&2
-  exit 1
+  if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+    echo "✘ no CF auth (no env token, no wrangler OAuth session, no keychain entry)" >&2
+    echo "  fix: run 'npx wrangler login' once" >&2
+    exit 1
+  fi
 fi
 
 npx wrangler@latest deploy --var "VERSION:${VERSION}"
