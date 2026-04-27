@@ -320,6 +320,16 @@ function onExecute(evt) {
   const node = [...dagBranches.querySelectorAll(".dag-node")]
     .find(n => n.textContent === evt.subtask);
   if (node) node.classList.add("done");
+
+  // Route stage's work is done as soon as the last subtask executes —
+  // drop the per-arm highlight immediately so the lingering "Sonnet wins"
+  // visual goes away before the reward stage even starts scoring.
+  const allNodes = dagBranches.querySelectorAll(".dag-node");
+  const doneNodes = dagBranches.querySelectorAll(".dag-node.done");
+  if (allNodes.length > 0 && allNodes.length === doneNodes.length) {
+    armsRow.classList.add("scored");
+    complete(stages.route, "executed");
+  }
 }
 
 function onReward(evt) {
@@ -366,11 +376,13 @@ function onReward(evt) {
 
   pulseConnector(3);
   setTimeout(() => complete(stages.reward, "scored"), 1200);
-  complete(stages.route, "executed");
-  // Drop the per-arm highlight once a composite reward exists. The bandit's
-  // pick is no longer the visual headline — cost/quality/SWU/cache stack
-  // together drove the score.
-  armsRow.classList.add("scored");
+  // Route stage already closed itself + cleared the arm highlight when its
+  // last execute fired (see onExecute). Belt-and-braces in case decompose
+  // didn't seed any dag-node markers for some run.
+  if (!armsRow.classList.contains("scored")) {
+    armsRow.classList.add("scored");
+    complete(stages.route, "executed");
+  }
 }
 
 function onComplete(evt) {
