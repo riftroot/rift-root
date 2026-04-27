@@ -9,16 +9,23 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://challenges.cloudflare.com" />
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+
+  <link rel="preload" as="script" href="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin />
+  <link rel="preload" as="script" href="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin />
+  <link rel="preload" as="script" href="/app.js" />
 
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="sections.css" />
   <link rel="stylesheet" href="why.css" />
 
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
+
   <style>
-    /* Client-side Turnstile gate. No server secret — once the managed
-       challenge resolves we just reveal the document body. Hostile bots
-       that ignore the widget still get a blank page until JS runs. */
+    /* Splash gate — paints instantly with system fonts so users see
+       something before the rest of the page hydrates. */
     #rr-gate {
       position: fixed; inset: 0; z-index: 9999;
       background: #0A0A0B;
@@ -35,7 +42,7 @@
       box-shadow: 0 30px 80px rgba(0,0,0,0.6);
       text-align: center;
       color: #e9e6ed;
-      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-family: ui-monospace, "JetBrains Mono", monospace;
     }
     #rr-gate h1 {
       font-size: 13px; margin: 0 0 4px;
@@ -54,6 +61,28 @@
     #rr-gate .ts-host { display: flex; justify-content: center; min-height: 70px; }
     #root { visibility: hidden; }
     body.gate-open #root { visibility: visible; }
+
+    /* Stale-cache toast (iPhone Safari pinned-shell escape hatch). */
+    #rr-update-toast {
+      position: fixed; left: 50%;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+      transform: translateX(-50%) translateY(8px);
+      background: #111118;
+      border: 1px solid #b558d8;
+      color: #d8b4fe;
+      font-family: ui-monospace, "JetBrains Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 10px 18px;
+      border-radius: 999px;
+      box-shadow: 0 14px 40px rgba(122, 24, 160, 0.4);
+      z-index: 10000;
+      cursor: pointer;
+      opacity: 0; pointer-events: none;
+      transition: opacity 320ms ease, transform 320ms ease;
+      max-width: calc(100vw - 32px); text-align: center;
+    }
+    #rr-update-toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
@@ -73,6 +102,7 @@
   </div>
 
   <div id="root"></div>
+  <div id="rr-update-toast">new version available · tap to reload</div>
 
   <script>
     function onRRGate() {
@@ -87,14 +117,9 @@
   </script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-
-  <script type="text/babel" src="tweaks-panel.jsx"></script>
-  <script type="text/babel" src="components/header.jsx"></script>
-  <script type="text/babel" src="components/sections.jsx"></script>
-  <script type="text/babel" src="components/about-contact.jsx"></script>
-  <script type="text/babel" src="app.jsx"></script>
+  <script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+  <script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+  <script defer src="/app.js"></script>
+  <script defer src="/cache-bust.js"></script>
 </body>
 </html>
