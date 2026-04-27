@@ -81,6 +81,20 @@ for (const stage of Object.values(stages)) {
   visibilityObserver.observe(stage);
 }
 
+// Track whether the event-stream sidecar is on-screen. If it is, the user
+// can see the demo advancing through the event log even when individual
+// pipeline stages are off-screen — so the clock keeps ticking and we still
+// fire (don't queue) stage events. Only when the sidecar is *also* hidden
+// does the queue + clock-freeze behaviour kick in.
+const sidecarEl = document.querySelector(".sidecar");
+let sidecarVisible = true;
+if (sidecarEl) {
+  new IntersectionObserver((entries) => {
+    for (const e of entries) sidecarVisible = e.intersectionRatio > 0.05;
+    if (sidecarVisible) viewportResume();
+  }, { threshold: [0, 0.05, 0.5, 1] }).observe(sidecarEl);
+}
+
 function drainQueue(stage) {
   const q = stageQueues.get(stage);
   if (!q || q.length === 0) return;
@@ -226,7 +240,10 @@ function handleEvent(evt) {
   // Stage-bound effects are queued until the target stage is ≥66% visible.
   const stage = eventToStage[evt.event];
   if (!stage) return;
-  if (stageVisible.get(stage)) {
+  // Dispatch immediately when the target stage is visible OR when the
+  // event-stream sidecar is visible (the user is following the demo via
+  // the live event log even if the stage card is off-screen).
+  if (stageVisible.get(stage) || sidecarVisible) {
     dispatchToStage(evt);
   } else {
     stageQueues.get(stage).push(evt);
