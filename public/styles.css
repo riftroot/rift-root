@@ -748,10 +748,12 @@ button { font: inherit; }
 }
 
 @media (max-width: 1023px) {
-  /* On mobile the sidecar pins to the viewport bottom and grows as the
-   * user scrolls down through the pipeline. JS sets the height + adds
-   * the .released class once the footer enters view, sliding it down
-   * so the actual page footer becomes reachable. */
+  /* On mobile the sidecar starts pinned to the viewport bottom as a small
+   * peek panel. It begins growing only once stage 05's bottom enters the
+   * viewport, with the title fading in alongside the growth. Once the
+   * sidecar's natural document slot scrolls into view, JS swaps the panel
+   * from fixed → static so it slides into place without leaving black
+   * space behind it. A spacer reserves the matching height in flow. */
   .sidecar.pinned-bottom {
     position: fixed;
     left: var(--pad-page);
@@ -764,25 +766,32 @@ button { font: inherit; }
     box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.55),
                 0 -1px 0 var(--border);
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--gap-3));
-    transition: transform 280ms var(--ease);
-    will-change: height, transform;
+    will-change: height;
   }
-  .sidecar.pinned-bottom.released {
-    transform: translateY(100%);
+  .sidecar.pinned-bottom .sidecar-head {
+    position: relative;
+    opacity: var(--title-opacity, 0);
+    transition: opacity 180ms linear;
   }
-  /* A drag-style handle hint at the top edge */
-  .sidecar.pinned-bottom .sidecar-head::before {
+  /* Drag-style handle hint at the top edge — visible whenever pinned. */
+  .sidecar.pinned-bottom::before {
     content: "";
     position: absolute;
-    top: -10px;
+    top: 8px;
     left: 50%;
     transform: translateX(-50%);
     width: 36px;
     height: 4px;
     border-radius: var(--r-pill);
     background: var(--border-accent);
+    z-index: 1;
+    pointer-events: none;
   }
-  .sidecar.pinned-bottom .sidecar-head { position: relative; }
+  /* Spacer that holds the sidecar's place in document flow while pinned. */
+  .sidecar-spacer {
+    width: 100%;
+    pointer-events: none;
+  }
 }
 
 @media (min-width: 1024px) {

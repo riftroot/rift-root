@@ -481,16 +481,28 @@ function escapeHtml(s) {
 
 // ───────────────────────────────────────────── mobile sidecar pin
 //
-// On mobile, the event-stream sidecar pins to the bottom of the viewport
-// at a small "peek" height and grows as the user scrolls down through the
-// pipeline. When the page footer enters view it slides off-screen so the
-// footer becomes reachable.
+// On mobile the event-stream sidecar lives as a small peek panel pinned
+// to the viewport bottom (no title visible — just a handle + a few event
+// lines bleeding through). It only starts growing once stage 05's bottom
+// crosses into the viewport, expanding in lockstep with scroll. The
+// title fades in alongside growth. Once the sidecar's natural document
+// slot scrolls into view, the panel switches from fixed → static so it
+// drops smoothly into the page rather than sliding off and leaving black
+// space behind it.
+//
+// A sibling spacer reserves the matching height in flow while pinned and
+// is removed once the sidecar takes its natural place.
 (function setupSidecarPin() {
   const sidecar = document.querySelector(".sidecar");
-  const footer  = document.querySelector(".footer");
+  const stage5  = document.getElementById("stage-complete");
   const layout  = document.querySelector(".layout");
-  if (!sidecar || !footer || !layout) return;
+  if (!sidecar || !stage5 || !layout) return;
 
+  const spacer = document.createElement("div");
+  spacer.className = "sidecar-spacer";
+  sidecar.parentNode.insertBefore(spacer, sidecar);
+
+  const PEEK_H = 132;  // peek height: handle + a couple of event lines
   const mq = window.matchMedia("(max-width: 1023px)");
   let raf = 0;
 
@@ -499,35 +511,66 @@ function escapeHtml(s) {
   function update() {
     raf = 0;
     if (!mq.matches) {
-      sidecar.classList.remove("pinned-bottom", "released");
-      sidecar.style.height = "";
+      sidecar.classList.remove("pinned-bottom");
+      sidecar.style.cssText = "";
+      sidecar.style.removeProperty("--title-opacity");
+      spacer.style.display = "none";
       layout.style.paddingBottom = "";
       return;
     }
-    sidecar.classList.add("pinned-bottom");
 
-    const vh         = window.innerHeight;
-    const scrollY    = window.scrollY || window.pageYOffset || 0;
-    const footerTop  = footer.getBoundingClientRect().top + scrollY;
-    // Scroll progress from 0 (page top) → 1 (footer just about to enter view)
-    const targetScroll = Math.max(1, footerTop - vh);
-    const progress     = clamp(scrollY / targetScroll, 0, 1);
+    const vh      = window.innerHeight;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const maxH    = Math.min(vh * 0.62, 460);
 
-    const minH = 110;
-    const maxH = Math.min(vh * 0.62, 460);
-    const h    = minH + (maxH - minH) * progress;
-    sidecar.style.height = h + "px";
+    spacer.style.display = "block";
+    spacer.style.height  = maxH + "px";
 
-    // Reserve enough bottom room on the layout so pipeline content can
-    // always be scrolled above the pinned overlay — uses maxH so the
-    // page length doesn't change as the sidecar grows (which would feed
-    // back into the scroll position).
+    // Anchor 0: scrollY at which stage 05's bottom first touches viewport
+    //           bottom (growth starts here).
+    // Anchor 1: scrollY at which the spacer's bottom touches viewport
+    //           bottom — at this moment a fixed panel of height maxH at
+    //           bottom of viewport overlays the spacer exactly, so we
+    //           can swap fixed → static without a visual jump.
+    const stage5Top    = stage5.getBoundingClientRect().top + scrollY;
+    const stage5Bottom = stage5Top + stage5.offsetHeight;
+    const spacerTopAbs = spacer.getBoundingClientRect().top + scrollY;
+    const anchor0      = stage5Bottom - vh;
+    const anchor1      = spacerTopAbs + maxH - vh;
+
+    if (scrollY >= anchor1) {
+      // Phase D: hand off to natural flow. The fixed panel and the static
+      // panel coincide at this exact scrollY, so the swap is invisible.
+      sidecar.classList.remove("pinned-bottom");
+      sidecar.style.position = "";
+      sidecar.style.left = "";
+      sidecar.style.right = "";
+      sidecar.style.bottom = "";
+      sidecar.style.height = maxH + "px";
+      sidecar.style.removeProperty("--title-opacity");
+      spacer.style.display = "none";
+    } else {
+      sidecar.classList.add("pinned-bottom");
+      sidecar.style.position = "fixed";
+      sidecar.style.left   = "var(--pad-page)";
+      sidecar.style.right  = "var(--pad-page)";
+      sidecar.style.bottom = "0";
+
+      let progress;
+      if (scrollY <= anchor0) {
+        progress = 0;
+      } else {
+        progress = clamp((scrollY - anchor0) / Math.max(1, anchor1 - anchor0), 0, 1);
+      }
+      const h = PEEK_H + (maxH - PEEK_H) * progress;
+      sidecar.style.height = h + "px";
+      sidecar.style.setProperty("--title-opacity", String(progress));
+    }
+
+    // Reserve constant bottom padding on the layout so pipeline stages
+    // can always be scrolled above the pinned panel. Uses maxH so page
+    // length is stable and doesn't feed back into anchor calculations.
     layout.style.paddingBottom = (maxH + 24) + "px";
-
-    // Release when the footer is meaningfully in view, so the user can
-    // actually read it instead of staring at the pinned overlay.
-    const footerVisibleBy = (scrollY + vh) - footerTop;
-    sidecar.classList.toggle("released", footerVisibleBy > 24);
   }
 
   function schedule() {
@@ -539,7 +582,6 @@ function escapeHtml(s) {
   window.addEventListener("resize", schedule);
   if (mq.addEventListener) mq.addEventListener("change", schedule);
   else mq.addListener(schedule);
-  // Re-measure once layouts settle (font load can shift footer position)
   schedule();
   setTimeout(schedule, 100);
   setTimeout(schedule, 600);
