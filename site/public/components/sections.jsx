@@ -437,8 +437,6 @@ function ErebusDiagram() {
           <li
             key={i}
             className={`ed-stage ed-${s.accent} ${s.kind ? 'ed-' + s.kind : ''}`}
-            data-fade
-            style={{ '--fade-delay': (i * 60) + 'ms' }}
           >
             <div className="ed-tag">{s.tag}</div>
             <div className="ed-card">

@@ -255,8 +255,6 @@ function Ask() {
                 <li
                   key={i}
                   className="ask-line"
-                  data-fade
-                  style={{ '--fade-delay': (i * 60) + 'ms' }}
                 >
                   <span className={`ask-bullet bullet-${l.c}`} />
                   <span className="ask-k">{l.k}</span>

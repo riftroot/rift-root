@@ -303,15 +303,19 @@ html body button.btn-primary:hover {
  */
 [data-fade] {
   opacity: 0;
-  transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(16px);
+  transition:
+    opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--fade-delay, 0ms);
-  will-change: opacity;
+  will-change: opacity, transform;
 }
 [data-fade].in {
   opacity: 1;
+  transform: translateY(0);
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-fade] { opacity: 1; transition: none; }
+  [data-fade] { opacity: 1; transform: none; transition: none; }
 }
 
 /* Marquee */
