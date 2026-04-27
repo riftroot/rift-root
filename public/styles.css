@@ -747,6 +747,44 @@ button { font: inherit; }
   min-height: 0;
 }
 
+@media (max-width: 1023px) {
+  /* On mobile the sidecar pins to the viewport bottom and grows as the
+   * user scrolls down through the pipeline. JS sets the height + adds
+   * the .released class once the footer enters view, sliding it down
+   * so the actual page footer becomes reachable. */
+  .sidecar.pinned-bottom {
+    position: fixed;
+    left: var(--pad-page);
+    right: var(--pad-page);
+    bottom: 0;
+    z-index: 40;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: 0;
+    box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.55),
+                0 -1px 0 var(--border);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--gap-3));
+    transition: transform 280ms var(--ease);
+    will-change: height, transform;
+  }
+  .sidecar.pinned-bottom.released {
+    transform: translateY(100%);
+  }
+  /* A drag-style handle hint at the top edge */
+  .sidecar.pinned-bottom .sidecar-head::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: var(--r-pill);
+    background: var(--border-accent);
+  }
+  .sidecar.pinned-bottom .sidecar-head { position: relative; }
+}
+
 @media (min-width: 1024px) {
   .sidecar {
     position: sticky;
@@ -770,10 +808,9 @@ button { font: inherit; }
 
 .event-list {
   list-style: none;
-  /* Mobile: explicit, scrollable box so events are visible without
-   * relying on a flex parent height that can collapse to 0. */
-  height: 320px;
-  max-height: 60vh;
+  /* Pinned mobile sidecar gets a fixed height — event-list fills it. */
+  flex: 1 1 0;
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -783,15 +820,6 @@ button { font: inherit; }
   font-family: var(--font-mono);
   font-size: var(--t-xs);
   padding-right: 4px;
-}
-
-@media (min-width: 1024px) {
-  .event-list {
-    flex: 1 1 0;
-    min-height: 0;
-    height: auto;
-    max-height: none;
-  }
 }
 
 .event-list li {

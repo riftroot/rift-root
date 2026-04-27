@@ -478,3 +478,69 @@ function escapeHtml(s) {
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[c]));
 }
+
+// ───────────────────────────────────────────── mobile sidecar pin
+//
+// On mobile, the event-stream sidecar pins to the bottom of the viewport
+// at a small "peek" height and grows as the user scrolls down through the
+// pipeline. When the page footer enters view it slides off-screen so the
+// footer becomes reachable.
+(function setupSidecarPin() {
+  const sidecar = document.querySelector(".sidecar");
+  const footer  = document.querySelector(".footer");
+  const layout  = document.querySelector(".layout");
+  if (!sidecar || !footer || !layout) return;
+
+  const mq = window.matchMedia("(max-width: 1023px)");
+  let raf = 0;
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  function update() {
+    raf = 0;
+    if (!mq.matches) {
+      sidecar.classList.remove("pinned-bottom", "released");
+      sidecar.style.height = "";
+      layout.style.paddingBottom = "";
+      return;
+    }
+    sidecar.classList.add("pinned-bottom");
+
+    const vh         = window.innerHeight;
+    const scrollY    = window.scrollY || window.pageYOffset || 0;
+    const footerTop  = footer.getBoundingClientRect().top + scrollY;
+    // Scroll progress from 0 (page top) → 1 (footer just about to enter view)
+    const targetScroll = Math.max(1, footerTop - vh);
+    const progress     = clamp(scrollY / targetScroll, 0, 1);
+
+    const minH = 110;
+    const maxH = Math.min(vh * 0.62, 460);
+    const h    = minH + (maxH - minH) * progress;
+    sidecar.style.height = h + "px";
+
+    // Reserve enough bottom room on the layout so pipeline content can
+    // always be scrolled above the pinned overlay — uses maxH so the
+    // page length doesn't change as the sidecar grows (which would feed
+    // back into the scroll position).
+    layout.style.paddingBottom = (maxH + 24) + "px";
+
+    // Release when the footer is meaningfully in view, so the user can
+    // actually read it instead of staring at the pinned overlay.
+    const footerVisibleBy = (scrollY + vh) - footerTop;
+    sidecar.classList.toggle("released", footerVisibleBy > 24);
+  }
+
+  function schedule() {
+    if (raf) return;
+    raf = requestAnimationFrame(update);
+  }
+
+  window.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule);
+  if (mq.addEventListener) mq.addEventListener("change", schedule);
+  else mq.addListener(schedule);
+  // Re-measure once layouts settle (font load can shift footer position)
+  schedule();
+  setTimeout(schedule, 100);
+  setTimeout(schedule, 600);
+})();
