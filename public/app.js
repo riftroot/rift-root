@@ -40,6 +40,42 @@ let pauseAt = 0;
 let startedAt = 0;
 let clockTicker = null;
 
+// Per-stage gating: stage-bound events queue here until ≥66% of the stage
+// is in the viewport, so users who scroll past don't miss the animation.
+const VISIBILITY_THRESHOLD = 0.66;
+const stageQueues = new Map(); // stage element → [evt, evt, …]
+const stageVisible = new Map(); // stage element → bool
+const eventToStage = {
+  ingest: stages.ingest,
+  decompose: stages.decompose,
+  route: stages.route,
+  execute: stages.route,    // execute renders inside the route stage
+  reward: stages.reward,
+  complete: stages.complete
+};
+
+const visibilityObserver = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    const wasVisible = stageVisible.get(entry.target) === true;
+    const isVisible = entry.intersectionRatio >= VISIBILITY_THRESHOLD;
+    stageVisible.set(entry.target, isVisible);
+    if (isVisible && !wasVisible) drainQueue(entry.target);
+  }
+}, { threshold: [0, VISIBILITY_THRESHOLD, 1] });
+
+for (const stage of Object.values(stages)) {
+  stageQueues.set(stage, []);
+  stageVisible.set(stage, false);
+  visibilityObserver.observe(stage);
+}
+
+function drainQueue(stage) {
+  const q = stageQueues.get(stage);
+  if (!q || q.length === 0) return;
+  const evts = q.splice(0, q.length);
+  for (const evt of evts) dispatchToStage(evt);
+}
+
 renderArms(null);
 
 btnReplay.addEventListener("click", () => start());
@@ -70,6 +106,7 @@ function reset() {
     stage.classList.remove("active", "complete");
     stage.querySelector(".stage-status").textContent = "idle";
     stage.querySelectorAll("[data-field]").forEach(el => (el.textContent = "—"));
+    stageQueues.set(stage, []);
   }
   connectors.forEach(c => c.classList.remove("active"));
   eventList.innerHTML = "";
@@ -135,7 +172,20 @@ function formatClock(ms) {
 }
 
 function handleEvent(evt) {
+  // Sidecar log always fires immediately so the event stream stays accurate
+  // regardless of viewport position.
   appendEventToSidecar(evt);
+  // Stage-bound effects are queued until the target stage is ≥66% visible.
+  const stage = eventToStage[evt.event];
+  if (!stage) return;
+  if (stageVisible.get(stage)) {
+    dispatchToStage(evt);
+  } else {
+    stageQueues.get(stage).push(evt);
+  }
+}
+
+function dispatchToStage(evt) {
   switch (evt.event) {
     case "ingest":    return onIngest(evt);
     case "decompose": return onDecompose(evt);
