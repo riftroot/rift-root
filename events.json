@@ -1,0 +1,17 @@
+[
+  { "ts": 0,    "event": "ingest",    "task": "analyze API docs · openai / anthropic / mistral", "subtasks": 5 },
+  { "ts": 180,  "event": "decompose", "dag_depth": 3, "parallel_branches": 3, "critical_path_length": 3,
+    "nodes": ["fetch:openai", "fetch:anthropic", "fetch:mistral", "synthesize:matrix", "recommend:tier-mix"] },
+  { "ts": 420,  "event": "route",     "subtask": "fetch:openai",      "arm": "gemini-flash-1.5", "tier": "cheap", "ucb_score": 0.87 },
+  { "ts": 460,  "event": "route",     "subtask": "fetch:anthropic",   "arm": "qwen-local-7b",     "tier": "cheap", "ucb_score": 0.81 },
+  { "ts": 500,  "event": "route",     "subtask": "fetch:mistral",     "arm": "deepseek-v3",       "tier": "cheap", "ucb_score": 0.79 },
+  { "ts": 1180, "event": "execute",   "subtask": "fetch:openai",      "status": "success", "latency_ms": 760, "tokens": 1240 },
+  { "ts": 1280, "event": "execute",   "subtask": "fetch:anthropic",   "status": "success", "latency_ms": 820, "tokens": 1108 },
+  { "ts": 1410, "event": "execute",   "subtask": "fetch:mistral",     "status": "success", "latency_ms": 910, "tokens":  996 },
+  { "ts": 1500, "event": "route",     "subtask": "synthesize:matrix", "arm": "claude-sonnet-4-6", "tier": "mid",   "ucb_score": 0.91 },
+  { "ts": 2820, "event": "execute",   "subtask": "synthesize:matrix", "status": "success", "latency_ms": 1320, "tokens": 3104 },
+  { "ts": 2900, "event": "route",     "subtask": "recommend:tier-mix","arm": "claude-sonnet-4-6", "tier": "mid",   "ucb_score": 0.94 },
+  { "ts": 4100, "event": "execute",   "subtask": "recommend:tier-mix","status": "success", "latency_ms": 1200, "tokens": 1840 },
+  { "ts": 4220, "event": "reward",    "swu": true, "cost_usd": 0.0031, "escalations": 1, "retries": 0, "reward_score": 0.76 },
+  { "ts": 4350, "event": "complete",  "artifact": "comparison_matrix.json + summary.md" }
+]

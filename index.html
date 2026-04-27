@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>rift · erebus edge demo</title>
+    <link rel="icon" href="brand/logo/edit-only-the--oo--letterforms-in--root---all-othe.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <img src="brand/logo/edit-only-the--oo--letterforms-in--root---all-othe.svg" alt="rift" class="brand-mark" />
+        <div class="brand-meta">
+          <span class="brand-name">erebus edge</span>
+          <span class="brand-sub">compositor &middot; live demo</span>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="btn-replay" class="btn btn-primary">replay demo</button>
+        <button id="btn-pause" class="btn">pause</button>
+        <span id="clock" class="clock">00:00.000</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="pipeline">
+        <div class="stage" data-event="ingest" id="stage-ingest">
+          <header class="stage-head">
+            <span class="stage-num">01</span>
+            <span class="stage-label">ingest</span>
+            <span class="stage-status">idle</span>
+          </header>
+          <div class="stage-body">
+            <p class="task-line"><span class="muted">task</span> <span data-field="task">—</span></p>
+            <p class="meta-line"><span class="muted">subtasks</span> <span data-field="subtasks">—</span></p>
+          </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <div class="stage" data-event="decompose" id="stage-decompose">
+          <header class="stage-head">
+            <span class="stage-num">02</span>
+            <span class="stage-label">decompose</span>
+            <span class="stage-status">idle</span>
+          </header>
+          <div class="stage-body">
+            <div class="dag">
+              <div class="dag-stat">
+                <span class="muted">depth</span>
+                <span data-field="dag_depth">—</span>
+              </div>
+              <div class="dag-stat">
+                <span class="muted">parallel</span>
+                <span data-field="parallel_branches">—</span>
+              </div>
+              <div class="dag-stat">
+                <span class="muted">critical path</span>
+                <span data-field="critical_path_length">—</span>
+              </div>
+            </div>
+            <div class="dag-branches" id="dag-branches"></div>
+          </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <div class="stage" data-event="route" id="stage-route">
+          <header class="stage-head">
+            <span class="stage-num">03</span>
+            <span class="stage-label">route &amp; execute</span>
+            <span class="stage-status">idle</span>
+          </header>
+          <div class="stage-body">
+            <p class="task-line"><span class="muted">subtask</span> <span data-field="subtask">—</span></p>
+            <div class="arms-row" id="arms-row"></div>
+            <div class="exec-log" id="exec-log"></div>
+          </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <div class="stage" data-event="reward" id="stage-reward">
+          <header class="stage-head">
+            <span class="stage-num">04</span>
+            <span class="stage-label">reward</span>
+            <span class="stage-status">idle</span>
+          </header>
+          <div class="stage-body">
+            <div class="reward-grid">
+              <div class="reward-cell">
+                <span class="muted">SWU</span>
+                <span id="swu-indicator" class="swu">—</span>
+              </div>
+              <div class="reward-cell">
+                <span class="muted">cost</span>
+                <span data-field="cost_usd">—</span>
+              </div>
+              <div class="reward-cell">
+                <span class="muted">escalations</span>
+                <span data-field="escalations">—</span>
+              </div>
+              <div class="reward-cell">
+                <span class="muted">retries</span>
+                <span data-field="retries">—</span>
+              </div>
+              <div class="reward-cell">
+                <span class="muted">reward score</span>
+                <span data-field="reward_score">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="connector"></div>
+
+        <div class="stage" data-event="complete" id="stage-complete">
+          <header class="stage-head">
+            <span class="stage-num">05</span>
+            <span class="stage-label">complete</span>
+            <span class="stage-status">idle</span>
+          </header>
+          <div class="stage-body">
+            <p class="task-line"><span class="muted">artifact</span> <span data-field="artifact">—</span></p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidecar">
+        <h2 class="sidecar-title">event stream</h2>
+        <p class="sidecar-sub">annals-of-ankou &middot; replay</p>
+        <ol class="event-list" id="event-list"></ol>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>rift &middot; erebus edge</span>
+      <span class="muted">vanilla html · sse-shaped replay · no build step</span>
+    </footer>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
