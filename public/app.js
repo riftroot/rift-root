@@ -495,8 +495,7 @@ function escapeHtml(s) {
 (function setupSidecarPin() {
   const sidecar = document.querySelector(".sidecar");
   const stage5  = document.getElementById("stage-complete");
-  const layout  = document.querySelector(".layout");
-  if (!sidecar || !stage5 || !layout) return;
+  if (!sidecar || !stage5) return;
 
   const spacer = document.createElement("div");
   spacer.className = "sidecar-spacer";
@@ -515,7 +514,6 @@ function escapeHtml(s) {
       sidecar.style.cssText = "";
       sidecar.style.removeProperty("--title-opacity");
       spacer.style.display = "none";
-      layout.style.paddingBottom = "";
       return;
     }
 
@@ -567,10 +565,8 @@ function escapeHtml(s) {
       sidecar.style.setProperty("--title-opacity", String(progress));
     }
 
-    // Reserve constant bottom padding on the layout so pipeline stages
-    // can always be scrolled above the pinned panel. Uses maxH so page
-    // length is stable and doesn't feed back into anchor calculations.
-    layout.style.paddingBottom = (maxH + 24) + "px";
+    // The spacer (maxH) already reserves the room the pinned panel
+    // needs above the footer — no extra layout padding required.
   }
 
   function schedule() {
