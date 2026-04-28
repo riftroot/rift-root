@@ -373,6 +373,12 @@ function Erebus() {
             because the system, not the headcount, is doing the composition.
           </p>
         </div>
+
+        <div className="erebus-explore-row">
+          <a href="/erebus" className="explore-cta explore-cta-violet">See the architecture →</a>
+          <a href="/surface" className="explore-cta explore-cta-cyan">Browse the surface →</a>
+          <a href="/demo" className="explore-cta explore-cta-lime">Live demo →</a>
+        </div>
       </div>
     </section>
   );

@@ -772,6 +772,37 @@ html body .xdriven-svg .xd-text-rose.xd-text-rose  { fill: rgb(240,113,120) !imp
 .live-pill { color: var(--lime); }
 .contact-arrow { color: var(--grey-3); transition: color 200ms, transform 200ms; }
 
+/* ===== EREBUS EXPLORE CTAs ===== */
+.erebus-explore-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: clamp(32px, 5vw, 48px);
+}
+.explore-cta {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  padding: 9px 18px;
+  border: 1px solid currentColor;
+  background: transparent;
+  transition: background 200ms, color 200ms;
+  white-space: nowrap;
+}
+.explore-cta-violet { color: var(--violet-bright); }
+.explore-cta-cyan   { color: var(--cyan); }
+.explore-cta-lime   { color: var(--lime); }
+.explore-cta-violet:hover { background: var(--violet-soft); color: var(--violet-bright); }
+.explore-cta-cyan:hover   { background: var(--cyan-soft);   color: var(--cyan); }
+.explore-cta-lime:hover   { background: var(--lime-soft);   color: var(--lime); }
+@media (max-width: 600px) {
+  .erebus-explore-row { justify-content: flex-start; flex-direction: column; }
+  .explore-cta { width: 100%; justify-content: center; }
+}
+
 /* ===== FOOTER ===== */
 .footer { margin-top: var(--section-y); border-top: 1px solid var(--line); padding-block: 28px; }
 .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
