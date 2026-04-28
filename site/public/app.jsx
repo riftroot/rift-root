@@ -1,6 +1,13 @@
 /* global React, useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakToggle, TweakSlider */
 /* global Nav, Hero, Marquee, Thesis, Erebus, BeyondGen, Why, About, Ask, Contact */
+/* global ErebusPage */
 const { useEffect, useRef } = React;
+
+/* ---- Route shim: /erebus renders the architecture page ---- */
+const __IS_EREBUS = window.location.pathname === '/erebus';
+if (__IS_EREBUS) {
+  ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(ErebusPage));
+}
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "violetIntensity": "moderate",
@@ -101,4 +108,6 @@ function App() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+if (!__IS_EREBUS) {
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+}

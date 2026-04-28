@@ -282,8 +282,7 @@ function Contact({ email = 'adam@riftroot.com' }) {
         <div className="contact-wrap">
           <div className="contact-channels">
             <ContactRow label="Email"    value={email} href={`mailto:${email}`} live />
-            <ContactRow label="LinkedIn" value="building shortly" href="#contact" placeholder />
-            <ContactRow label="GitHub"   value="building shortly" href="#contact" placeholder />
+            <ContactRow label="GitHub"   value="github.com/riftroot" href="https://github.com/riftroot" live />
           </div>
 
           <div className="contact-prose">

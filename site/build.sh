@@ -10,7 +10,7 @@ cd "$(dirname "$0")/public"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-for f in tweaks-panel.jsx components/header.jsx components/sections.jsx components/about-contact.jsx app.jsx; do
+for f in tweaks-panel.jsx components/header.jsx components/sections.jsx components/about-contact.jsx components/erebus-page.jsx app.jsx; do
   base="$(basename "$f" .jsx)"
   out="$TMP/${base}.js"
   npx --yes esbuild@0.25.0 "$f" \
@@ -23,7 +23,7 @@ done
 
 # Wrap each transpiled chunk in an IIFE then concatenate.
 {
-  for base in tweaks-panel header sections about-contact app; do
+  for base in tweaks-panel header sections about-contact erebus-page app; do
     printf '(function(){'
     cat "$TMP/${base}.js"
     printf '\n})();\n'
