@@ -500,6 +500,6 @@ function SurfacePage() {
         )
     ),
 
-    typeof Footer !== 'undefined' && React.createElement(Footer, null)
+    React.createElement(Footer, null)
   );
 }

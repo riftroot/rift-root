@@ -197,7 +197,7 @@ function XDrivenTable() {
                   strokeWidth="1" strokeDasharray="2 4" />
             <text x={cx} y={cy + 160} textAnchor="middle"
                   fontFamily="JetBrains Mono, monospace" fontSize="10"
-                  style={{ fill: 'rgb(163,230,53)' }} letterSpacing="2">SHADOW OPS · MAB VARIANTS</text>
+                  style={{ fill: 'var(--lime)' }} letterSpacing="2">SHADOW OPS · MAB VARIANTS</text>
           </g>
 
           {/* Input cards on the left */}

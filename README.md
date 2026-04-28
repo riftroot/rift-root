@@ -48,6 +48,10 @@ The demo replays `events.json` via `setTimeout` chains spaced by the real
 Supported events: `ingest`, `decompose`, `route`, `execute`, `reward`,
 `complete`. See `events.json` for a full demo trace.
 
+## Staging
+
+QA staging runs at **https://riftroot-qa.mock1ngbb.com** (gated by Cloudflare Turnstile, accessible via Access bypass). Deploy via `make deploy-qa` against the `qa/v2` branch. Cutover plan (merge qa/v2 → main, swap directories) described in `.claude/PROD-FREEZE.md`.
+
 ## Brand
 
 Logo and palette derived from the rift mark in `brand/logo/`.

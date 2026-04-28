@@ -16,35 +16,6 @@
   padding-top: 80px; /* clear fixed nav */
 }
 
-/* ---- Top nav bar (minimal, page-specific override) ---- */
-.ep-topbar {
-  position: fixed; top: 0; left: 0; right: 0;
-  z-index: 50;
-  background: rgba(10, 10, 11, 0.88);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
-  height: 52px;
-  display: flex; align-items: center;
-}
-.ep-topbar-inner {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; max-width: 1280px;
-  margin: 0 auto; padding-inline: var(--gutter);
-}
-.ep-back {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: var(--font-mono); font-size: 11px;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--grey-2); text-decoration: none;
-  transition: color 200ms;
-}
-.ep-back:hover { color: var(--violet-bright); }
-.ep-back-arrow { color: var(--violet-bright); }
-.ep-topbar-chip {
-  font-family: var(--font-mono); font-size: 10px;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--grey-1);
-}
 
 /* ---- Lead section ---- */
 .ep-lead {
@@ -603,44 +574,6 @@
 }
 .ep-partner-cta:hover { border-bottom-color: var(--violet); color: var(--cyan); }
 
-/* ---- Footer strip ---- */
-.ep-footer {
-  border-top: 1px solid var(--line);
-  padding: clamp(24px, 4vw, 40px) 0;
-}
-.ep-footer-inner {
-  display: flex; align-items: center;
-  justify-content: space-between;
-  gap: 24px; flex-wrap: wrap;
-}
-.ep-footer-back {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-family: var(--font-mono); font-size: 11px;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--grey-2); text-decoration: none;
-  border: 1px solid var(--line);
-  padding: 10px 16px;
-  transition: border-color 200ms, color 200ms, background 200ms;
-}
-.ep-footer-back:hover {
-  border-color: var(--violet);
-  color: var(--violet-bright);
-  background: var(--violet-soft);
-}
-.ep-footer-stamp {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--grey-1);
-  display: flex; align-items: center; gap: 8px;
-}
-.ep-footer-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--lime);
-  box-shadow: 0 0 8px var(--lime-glow);
-  animation: pulse 2.4s ease-in-out infinite;
-}
 
 /* ---- Responsive tweaks ---- */
 @media (max-width: 540px) {
