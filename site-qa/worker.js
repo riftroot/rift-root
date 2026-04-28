@@ -27,6 +27,30 @@ export default {
       });
     }
 
+    // Manual escape hatch for iOS Safari pinned-shell scenarios. Visit
+    // /_bust from the address bar; an inline script clears Cache Storage
+    // and any service workers, then redirects home with a unique query.
+    // Works even when app.js is broken — no React, no external assets.
+    if (url.pathname === "/_bust") {
+      const html = `<!doctype html><meta charset=utf-8><title>busting cache…</title>
+<style>body{background:#0A0A0B;color:#d8b4fe;font:13px ui-monospace,monospace;display:grid;place-items:center;height:100vh;margin:0;letter-spacing:.12em;text-transform:uppercase}</style>
+<body>busting cache…
+<script>
+(async()=>{
+  try{if('caches' in window){const k=await caches.keys();await Promise.all(k.map(x=>caches.delete(x)))}}catch(e){}
+  try{if('serviceWorker' in navigator){const r=await navigator.serviceWorker.getRegistrations();await Promise.all(r.map(x=>x.unregister()))}}catch(e){}
+  try{sessionStorage.clear()}catch(e){}
+  location.replace('/?nuke='+Date.now());
+})();
+</script>`;
+      return new Response(html, {
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      });
+    }
+
     // Version probe — drives the in-page cache-bust toast that hard-
     // reloads iPhone Safari out of a pinned stale shell.
     if (url.pathname === "/api/version") {
