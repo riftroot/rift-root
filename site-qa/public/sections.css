@@ -570,10 +570,6 @@ html body .ed-loop-text { color: rgb(181, 181, 189) !important; }
 .pulse-lime   { color: var(--lime);          box-shadow: 0 0 8px var(--lime-glow); }
 .rail-stamp { color: var(--grey-2); }
 
-/* legacy About bits (no longer rendered, kept harmless) */
-.about-grid { display: grid; grid-template-columns: 1fr; gap: 48px; }
-.portrait-frame { display: none; }
-.portrait-monogram { font-size: 180px; line-height: 0.9; color: var(--grey-4); position: relative; }
 .portrait-monogram::after {
   content: ''; position: absolute; top: 8px; right: 22%;
   width: 14px; height: 14px; border-radius: 50%;

@@ -1,6 +1,16 @@
 # Rift Root GitHub Org: Build Plan
 
-## Phase 0 — Org Setup (30 minutes)
+## Completed
+
+- ✓ Phase 0 — Org setup (riftroot org created, avatar set, website linked)
+- ✓ Phase 1 — erebus-edge repo created, pinned, topics set, closed-source
+- ✓ Phase 2 — README sections 1-7 written and live
+- ✓ Phase 3 — Mermaid diagram implemented
+- ✓ Org profile repo `.github/profile/README.md` deployed
+
+---
+
+## Phase 0 — Org Setup (completed 2026-04-28)
 
 ### Create the org
 - Username: `riftroot`
