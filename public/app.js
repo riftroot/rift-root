@@ -128,7 +128,19 @@ renderArms(null);
 btnReplay.addEventListener("click", () => start());
 clockBtn.addEventListener("click", () => togglePause());
 
-start();
+// Path A: delay start until the gate-close CSS transition has fully completed.
+// onRRGate() (in index.html) dispatches 'rr-gate-open' after 350ms — just past
+// the 320ms transition — so IntersectionObserver has had a paint cycle to
+// deliver visibility callbacks for the previously-hidden stages. Without this,
+// arriving with the rr-gate cookie causes replay to start while stages are
+// still visibility:hidden, IntersectionObserver never fires for them, and
+// playback stalls at the first queued event (~1.524s).
+if (document.body.classList.contains('gate-open')) {
+  // Gate already open (e.g. manual Turnstile pass happened before module eval).
+  start();
+} else {
+  document.addEventListener('rr-gate-open', () => start(), { once: true });
+}
 
 async function start() {
   reset();
@@ -210,13 +222,24 @@ function togglePause() {
   }
 }
 
+// Path B (defensive): track the last reported elapsed time and clamp forward
+// jumps to 100ms per tick. Prevents a rAF/setInterval burst after a paint
+// stall from skipping events that haven't been dispatched yet.
+let _lastClockElapsed = 0;
+
 function startClock() {
   stopClock();
+  _lastClockElapsed = 0;
   clockTicker = setInterval(() => {
     const now = performance.now();
     const viewportFreeze = viewportPausedAt ? (now - viewportPausedAt) : 0;
-    const elapsed = (now - startedAt) - viewportPausedAccum - viewportFreeze;
-    clockEl.textContent = formatClock(elapsed);
+    const raw = (now - startedAt) - viewportPausedAccum - viewportFreeze;
+    // Clamp forward jumps: no single tick may advance displayed time by more
+    // than 100ms. This keeps the display honest even if the JS thread was
+    // blocked — it does NOT affect setTimeout scheduling, only the clock face.
+    const clamped = Math.min(raw, _lastClockElapsed + 100);
+    _lastClockElapsed = Math.max(clamped, _lastClockElapsed);
+    clockEl.textContent = formatClock(_lastClockElapsed);
   }, 50);
 }
 

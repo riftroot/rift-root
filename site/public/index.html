@@ -11,6 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://challenges.cloudflare.com" />
   <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="preconnect" href="https://demo.riftroot.com" crossorigin />
+  <link rel="dns-prefetch" href="https://demo.riftroot.com" />
 
   <link rel="preload" as="script" href="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin />
   <link rel="preload" as="script" href="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin />
@@ -105,14 +107,27 @@
   <div id="rr-update-toast">new version available · tap to reload</div>
 
   <script>
+    // Gate-passed flag is shared across riftroot.com ↔ demo.riftroot.com via a
+    // cookie on the apex domain. sessionStorage stays as a fallback for origins
+    // outside .riftroot.com (e.g. rift-root.mock1ngbb.com) where the cookie
+    // domain= mismatch causes the browser to silently drop the Set-Cookie.
     function onRRGate() {
       var g = document.getElementById('rr-gate');
       if (g) g.classList.add('is-open');
       document.body.classList.add('gate-open');
       try { sessionStorage.setItem('rr-gate', '1'); } catch (e) {}
+      try {
+        var h = location.hostname;
+        if (h === 'riftroot.com' || h.indexOf('.riftroot.com') !== -1) {
+          document.cookie = 'rr-gate=1; domain=.riftroot.com; path=/; max-age=86400; samesite=lax; secure';
+        }
+      } catch (e) {}
     }
     try {
-      if (sessionStorage.getItem('rr-gate') === '1') onRRGate();
+      var passed = false;
+      try { passed = (sessionStorage.getItem('rr-gate') === '1'); } catch (e) {}
+      if (!passed) passed = /(?:^|;\s*)rr-gate=1(?:;|$)/.test(document.cookie || '');
+      if (passed) onRRGate();
     } catch (e) {}
   </script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
