@@ -503,3 +503,5 @@ function SurfacePage() {
     React.createElement(Footer, null)
   );
 }
+
+Object.assign(window, { SurfacePage });
