@@ -419,3 +419,29 @@ html body button.btn-primary:hover {
 .chip.amber  { color: var(--amber);         border-color: var(--amber);  background: var(--amber-soft); }
 .chip.rose   { color: var(--rose);          border-color: var(--rose);   background: var(--rose-soft); }
 .chip.grey   { color: var(--grey-3);        border-color: var(--line);   background: var(--ink); }
+
+/* ── Cross-domain nav loading feedback ────────────────────── */
+.btn.is-loading,
+.nav-cta.is-loading,
+.nav-mobile-cta.is-loading { opacity: 0.6; pointer-events: none; }
+
+.btn.is-loading .arrow,
+.nav-cta.is-loading .dot,
+.nav-mobile-cta.is-loading .dot {
+  animation: rr-spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes rr-spin { to { transform: rotate(360deg); } }
+
+/* Top-of-page progress sliver on cross-domain nav */
+body.is-leaving::before {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--violet) 0%, var(--cyan) 50%, var(--violet) 100%);
+  background-size: 200% 100%;
+  animation: rr-leaving 1.2s linear infinite;
+  z-index: 100000;
+}
+
+@keyframes rr-leaving { to { background-position: -200% 0; } }

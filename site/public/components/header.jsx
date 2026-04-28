@@ -62,6 +62,21 @@ function Nav() {
           ))}
         </nav>
 
+        <a
+          href="https://demo.riftroot.com"
+          className="nav-cta"
+          rel="noopener"
+          aria-label="Open Erebus Edge live demo"
+          onClick={(e) => {
+            e.currentTarget.setAttribute('aria-busy', 'true');
+            e.currentTarget.classList.add('is-loading');
+            document.body.classList.add('is-leaving');
+          }}
+        >
+          <span className="dot" />
+          demo
+        </a>
+
         <button
           className={`nav-burger ${open ? 'is-open' : ''}`}
           aria-label="Toggle menu"
@@ -81,6 +96,20 @@ function Nav() {
               <span className="arrow">↗</span>
             </a>
           ))}
+          <a
+            href="https://demo.riftroot.com"
+            className="nav-mobile-cta"
+            rel="noopener"
+            onClick={(e) => {
+              setOpen(false);
+              e.currentTarget.setAttribute('aria-busy', 'true');
+              e.currentTarget.classList.add('is-loading');
+              document.body.classList.add('is-leaving');
+            }}
+          >
+            <span className="dot" />
+            live demo
+          </a>
         </div>
       )}
     </header>
@@ -123,6 +152,21 @@ function Hero() {
               </a>
               <a href="#why" className="btn">
                 Why this exists
+              </a>
+              <a
+                href="https://demo.riftroot.com"
+                className="btn"
+                rel="noopener"
+                aria-label="Open Erebus Edge live demo"
+                style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}
+                onClick={(e) => {
+                  e.currentTarget.setAttribute('aria-busy', 'true');
+                  e.currentTarget.classList.add('is-loading');
+                  document.body.classList.add('is-leaving');
+                }}
+              >
+                Live demo
+                <span className="arrow">↗</span>
               </a>
             </div>
           </div>
