@@ -445,3 +445,106 @@ body.is-leaving::before {
 }
 
 @keyframes rr-leaving { to { background-position: -200% 0; } }
+
+/* ====== Site footer ====== */
+.site-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--ink);
+  font-family: var(--font-mono);
+}
+
+.site-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 32px;
+  max-width: 1200px;
+  padding-inline: 24px;
+  margin-inline: auto;
+}
+
+/* Brand mark — logo + wordmark + LLC badge */
+.site-footer-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  transition: color 200ms;
+}
+.site-footer-mark:hover {
+  color: var(--grey-4);
+}
+
+.site-footer-wordmark {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: inherit;
+}
+.site-footer-wordmark .dim {
+  color: var(--grey-1);
+}
+
+.site-footer-llc {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey-1);
+  align-self: flex-end;
+  padding-bottom: 1px;
+}
+
+/* Copyright / meta */
+.site-footer-copy {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--grey-1);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* Nav links */
+.site-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-footer-link {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grey-2);
+  text-decoration: none;
+  transition: color 200ms;
+}
+.site-footer-link:hover {
+  color: var(--violet-bright);
+}
+
+.site-footer-sep {
+  color: var(--grey-1);
+  font-size: 10px;
+  user-select: none;
+}
+
+/* Mobile: stack vertically, center */
+@media (max-width: 640px) {
+  .site-footer-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    padding-block: 28px;
+  }
+  .site-footer-copy {
+    white-space: normal;
+  }
+}
+/* ====== /Site footer ====== */
