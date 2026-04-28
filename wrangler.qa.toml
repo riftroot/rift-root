@@ -1,0 +1,18 @@
+name = "riftroot-qa-edge"
+main = "site-qa/worker.js"
+compatibility_date = "2025-04-01"
+account_id = "a62c1c7880b50ac345fc7c2135f6ae84"
+
+# workers.dev is enabled so we have a proof-of-life URL before the
+# custom domain DNS is live. Can be flipped off after cutover.
+workers_dev = true
+
+[assets]
+directory = "./site-qa/public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = true
+
+# Custom domain is riftroot-qa.mock1ngbb.com — being attached via
+# workers/domains API by a sibling agent. Route stanza intentionally
+# omitted; re-attach is idempotent through the API.
