@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Rift Root LLC — System of Systems · Workflow Accelerator</title>
+  <meta name="description" content="Rift Root LLC builds cost-optimized, model-agnostic task completion. Erebus Edge: stacked MAB systems for self-tuning software work." />
+  <meta name="theme-color" content="#0A0A0B" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://challenges.cloudflare.com" />
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="preconnect" href="https://demo.riftroot.com" crossorigin />
+  <link rel="dns-prefetch" href="https://demo.riftroot.com" />
+
+  <link rel="preload" as="script" href="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin />
+  <link rel="preload" as="script" href="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin />
+  <link rel="preload" as="script" href="/app.js" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="sections.css" />
+  <link rel="stylesheet" href="why.css" />
+  <link rel="stylesheet" href="erebus.css" />
+  <link rel="stylesheet" href="surface.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
+
+  <style>
+    /* Splash gate — paints instantly with system fonts so users see
+       something before the rest of the page hydrates. */
+    #rr-gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #0A0A0B;
+      display: grid; place-items: center;
+      transition: opacity 320ms ease, visibility 0s linear 320ms;
+    }
+    #rr-gate.is-open { opacity: 0; visibility: hidden; pointer-events: none; }
+    #rr-gate .gate-card {
+      max-width: 360px; width: calc(100% - 32px);
+      padding: 28px 24px;
+      border: 1px solid #2a2a30;
+      border-radius: 14px;
+      background: #111118;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      text-align: center;
+      color: #e9e6ed;
+      font-family: ui-monospace, "JetBrains Mono", monospace;
+    }
+    #rr-gate h1 {
+      font-size: 13px; margin: 0 0 4px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: #b558d8;
+    }
+    #rr-gate p {
+      font-size: 11px; margin: 0 0 18px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #8a8595;
+    }
+    #rr-gate .gate-mark {
+      width: 56px; height: 56px; margin: 0 auto 14px;
+      display: block; border-radius: 8px;
+    }
+    #rr-gate .ts-host { display: flex; justify-content: center; min-height: 70px; }
+    #root { visibility: hidden; }
+    body.gate-open #root { visibility: visible; }
+
+    /* Stale-cache toast (iPhone Safari pinned-shell escape hatch). */
+    #rr-update-toast {
+      position: fixed; left: 50%;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+      transform: translateX(-50%) translateY(8px);
+      background: #111118;
+      border: 1px solid #b558d8;
+      color: #d8b4fe;
+      font-family: ui-monospace, "JetBrains Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 10px 18px;
+      border-radius: 999px;
+      box-shadow: 0 14px 40px rgba(122, 24, 160, 0.4);
+      z-index: 10000;
+      cursor: pointer;
+      opacity: 0; pointer-events: none;
+      transition: opacity 320ms ease, transform 320ms ease;
+      max-width: calc(100vw - 32px); text-align: center;
+    }
+    #rr-update-toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div id="rr-gate" role="dialog" aria-label="human check">
+    <div class="gate-card">
+      <img class="gate-mark" src="assets/riftroot-logo.svg" alt="rift root" onerror="this.src='uploads/make-this-connection-more-organic-like-roots-or-kn.svg'" />
+      <h1>rift root</h1>
+      <p>human check &middot; cloudflare turnstile</p>
+      <div class="ts-host">
+        <div class="cf-turnstile"
+             data-sitekey="0x4AAAAAACw6w9OLbmLNAPPS"
+             data-theme="dark"
+             data-appearance="always"
+             data-callback="onRRGate"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="root"></div>
+  <div id="rr-update-toast">new version available · tap to reload</div>
+
+  <script>
+    // Gate-passed flag is shared across riftroot.com ↔ demo.riftroot.com via a
+    // cookie on the apex domain. sessionStorage stays as a fallback for origins
+    // outside .riftroot.com (e.g. rift-root.mock1ngbb.com) where the cookie
+    // domain= mismatch causes the browser to silently drop the Set-Cookie.
+    function onRRGate() {
+      var g = document.getElementById('rr-gate');
+      if (g) g.classList.add('is-open');
+      document.body.classList.add('gate-open');
+      try { sessionStorage.setItem('rr-gate', '1'); } catch (e) {}
+      try {
+        var h = location.hostname;
+        if (h === 'riftroot.com' || h.indexOf('.riftroot.com') !== -1) {
+          document.cookie = 'rr-gate=1; domain=.riftroot.com; path=/; max-age=86400; samesite=lax; secure';
+        }
+      } catch (e) {}
+    }
+    try {
+      var passed = false;
+      try { passed = (sessionStorage.getItem('rr-gate') === '1'); } catch (e) {}
+      if (!passed) passed = /(?:^|;\s*)rr-gate=1(?:;|$)/.test(document.cookie || '');
+      if (passed) onRRGate();
+    } catch (e) {}
+  </script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+  <script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+  <script defer src="/app.js"></script>
+  <script defer src="/cache-bust.js"></script>
+</body>
+</html>

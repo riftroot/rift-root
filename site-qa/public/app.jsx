@@ -1,0 +1,128 @@
+/* global React, useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakToggle, TweakSlider */
+/* global Nav, Hero, Marquee, Thesis, Erebus, BeyondGen, Why, About, Ask, Contact */
+/* global ErebusPage, SurfacePage, Footer */
+/* global Router, Route, useLocation, navigate */
+const { useEffect, useRef } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "violetIntensity": "moderate",
+  "density": "default",
+  "monoOnly": false,
+  "showGrid": true,
+  "marqueeOn": true
+}/*EDITMODE-END*/;
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  // Apply tweak attributes to <body>
+  useEffect(() => {
+    const b = document.body;
+    b.toggleAttribute('data-violet-low',   tweaks.violetIntensity === 'sparing');
+    b.toggleAttribute('data-violet-heavy', tweaks.violetIntensity === 'heavy');
+    b.toggleAttribute('data-density-tight', tweaks.density === 'tight');
+    b.toggleAttribute('data-density-loose', tweaks.density === 'loose');
+    b.toggleAttribute('data-mono', !!tweaks.monoOnly);
+    b.toggleAttribute('data-no-grid', !tweaks.showGrid);
+  }, [tweaks]);
+
+  // Fade-in observer
+  useEffect(() => {
+    const els = document.querySelectorAll('[data-fade]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    els.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <>
+      <Nav />
+      <main>
+        <Hero />
+        {tweaks.marqueeOn && <Marquee />}
+        <Thesis />
+        <Erebus />
+        <BeyondGen />
+        <Why />
+        <About />
+        <Ask />
+        <Contact email="contact@riftroot.com" />
+      </main>
+      <Footer />
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection title="Violet">
+          <TweakRadio
+            label="Intensity"
+            value={tweaks.violetIntensity}
+            onChange={v => setTweak('violetIntensity', v)}
+            options={[
+              { value: 'sparing',  label: 'Sparing'  },
+              { value: 'moderate', label: 'Moderate' },
+              { value: 'heavy',    label: 'Heavy'    },
+            ]}
+          />
+        </TweakSection>
+
+        <TweakSection title="Density">
+          <TweakRadio
+            label="Section padding"
+            value={tweaks.density}
+            onChange={v => setTweak('density', v)}
+            options={[
+              { value: 'tight',   label: 'Tight'   },
+              { value: 'default', label: 'Default' },
+              { value: 'loose',   label: 'Loose'   },
+            ]}
+          />
+        </TweakSection>
+
+        <TweakSection title="Type">
+          <TweakToggle
+            label="Mono only (drop the serif)"
+            value={tweaks.monoOnly}
+            onChange={v => setTweak('monoOnly', v)}
+          />
+        </TweakSection>
+
+        <TweakSection title="Atmosphere">
+          <TweakToggle
+            label="Hero grid backdrop"
+            value={tweaks.showGrid}
+            onChange={v => setTweak('showGrid', v)}
+          />
+          <TweakToggle
+            label="Marquee strip"
+            value={tweaks.marqueeOn}
+            onChange={v => setTweak('marqueeOn', v)}
+          />
+        </TweakSection>
+      </TweaksPanel>
+    </>
+  );
+}
+
+function DemoRedirect() {
+  useEffect(() => { window.location.replace('https://demo.riftroot.com'); }, []);
+  return null;
+}
+
+// --- Router mount: add new routes here (e.g. /surface, /demo) ---
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <Router>
+    <Route path="/">
+      <App />
+    </Route>
+    <Route path="/erebus">
+      <ErebusPage />
+    </Route>
+    <Route path="/surface">
+      <SurfacePage />
+    </Route>
+    <Route path="/demo">
+      <DemoRedirect />
+    </Route>
+  </Router>
+);
