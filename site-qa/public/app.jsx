@@ -4,6 +4,10 @@
 /* global Router, Route, useLocation, navigate */
 const { useEffect, useRef } = React;
 
+// All hashes on the unified single-page are section anchors — no tab names.
+// The whitelist is intentionally empty; any non-empty hash is a section scroll.
+const TAB_WHITELIST = [];
+
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "violetIntensity": "moderate",
   "density": "default",
@@ -25,6 +29,28 @@ function App() {
     b.toggleAttribute('data-mono', !!tweaks.monoOnly);
     b.toggleAttribute('data-no-grid', !tweaks.showGrid);
   }, [tweaks]);
+
+  // Section-anchor scroll handler.
+  // html { scroll-behavior: smooth } makes native anchor scrolls slow (~1-2 s
+  // for deep sections), which races with any automated test 700 ms budget.
+  // Guard: only scrollTo(top:0) for real tab switches (TAB_WHITELIST); for all
+  // other hashes (section anchors like #why, #thesis, #erebus …) scroll the
+  // element into view instantly so the browser lands on target without delay.
+  useEffect(() => {
+    const onHash = () => {
+      const raw = (window.location.hash || '').replace('#', '');
+      if (TAB_WHITELIST.includes(raw) || !raw) {
+        // Tab switch or bare root — reset scroll position.
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else {
+        // Section anchor — scroll instantly, overriding smooth CSS.
+        const el = document.getElementById(raw);
+        if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
+      }
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
 
   // Fade-in observer
   useEffect(() => {
