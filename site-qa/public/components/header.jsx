@@ -22,7 +22,7 @@ function LogoGlyph({ size = 28 }) {
 /* ==============================
    NAV
    mode="home"  → in-page anchor links for the marketing page (default)
-   mode="page"  → top-level href links for sub-pages (/erebus, /surface, /demo)
+   mode="page"  → reserved for future sub-pages (currently only Home)
    Auto-detects from window.location.pathname when no mode prop is passed.
    ============================== */
 function Nav({ mode }) {
@@ -40,21 +40,21 @@ function Nav({ mode }) {
 
   // home mode: in-page anchor links
   const homeLinks = [
-    { href: '#thesis',  label: 'Thesis',      num: '01' },
-    { href: '#erebus',  label: 'Erebus Edge', num: '02' },
-    { href: '#beyond',  label: 'Beyond Gen',  num: '03' },
-    { href: '#why',     label: 'Why',         num: '04' },
-    { href: '#about',   label: 'About',       num: '05' },
-    { href: '#ask',     label: 'The Ask',     num: '06' },
-    { href: '#contact', label: 'Contact',     num: '07' },
+    { href: '#thesis',  label: 'Thesis',          num: '01' },
+    { href: '#hostile', label: 'Hostile Network', num: '02' },
+    { href: '#erebus',  label: 'Erebus Edge',     num: '03' },
+    { href: '#surface', label: 'Surface',         num: '04' },
+    { href: '#demo',    label: 'Demo',            num: '05' },
+    { href: '#beyond',  label: 'Beyond Gen',      num: '06' },
+    { href: '#why',     label: 'Why',             num: '07' },
+    { href: '#about',   label: 'About',           num: '08' },
+    { href: '#ask',     label: 'The Ask',         num: '09' },
+    { href: '#contact', label: 'Contact',         num: '10' },
   ];
 
   // page mode: top-level page links
   const pageLinks = [
     { href: '/',        label: 'Home',         num: '01' },
-    { href: '/erebus',  label: 'Erebus Edge',  num: '02' },
-    { href: '/surface', label: 'Surface',      num: '03' },
-    { href: '/demo',    label: 'Demo',         num: '04' },
   ];
 
   const links = resolvedMode === 'page' ? pageLinks : homeLinks;
@@ -83,15 +83,8 @@ function Nav({ mode }) {
         </nav>
 
         <a
-          href="https://demo.riftroot.com"
+          href="#demo"
           className="nav-cta"
-          rel="noopener"
-          aria-label="Open Erebus Edge live demo"
-          onClick={(e) => {
-            e.currentTarget.setAttribute('aria-busy', 'true');
-            e.currentTarget.classList.add('is-loading');
-            document.body.classList.add('is-leaving');
-          }}
         >
           <span className="dot" />
           demo
@@ -117,18 +110,12 @@ function Nav({ mode }) {
             </a>
           ))}
           <a
-            href="https://demo.riftroot.com"
+            href="#demo"
             className="nav-mobile-cta"
-            rel="noopener"
-            onClick={(e) => {
-              setOpen(false);
-              e.currentTarget.setAttribute('aria-busy', 'true');
-              e.currentTarget.classList.add('is-loading');
-              document.body.classList.add('is-leaving');
-            }}
+            onClick={() => setOpen(false)}
           >
             <span className="dot" />
-            live demo
+            demo ↓
           </a>
         </div>
       )}
@@ -166,27 +153,17 @@ function Hero() {
             </p>
 
             <div className="hero-actions">
-              <a href="#erebus" className="btn btn-primary">
-                See Erebus Edge
+              <a href="#why" className="btn btn-primary">
+                Why this exists
                 <span className="arrow">→</span>
               </a>
-              <a href="#why" className="btn">
-                Why this exists
-              </a>
               <a
-                href="https://demo.riftroot.com"
+                href="#demo"
                 className="btn"
-                rel="noopener"
-                aria-label="Open Erebus Edge live demo"
                 style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}
-                onClick={(e) => {
-                  e.currentTarget.setAttribute('aria-busy', 'true');
-                  e.currentTarget.classList.add('is-loading');
-                  document.body.classList.add('is-leaving');
-                }}
               >
-                Live demo
-                <span className="arrow">↗</span>
+                Compositor economics
+                <span className="arrow">↓</span>
               </a>
             </div>
           </div>

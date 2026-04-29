@@ -7,7 +7,7 @@ function Why() {
   return (
     <section id="why" className="section section-why">
       <div className="container">
-        <SectionHead num="04" name="Why this exists" meta="OPERATING INFRASTRUCTURE · NOT A PRODUCT" />
+        <SectionHead num="07" name="Why this exists" meta="OPERATING INFRASTRUCTURE · NOT A PRODUCT" />
 
         <div className="why-hero">
           <div className="why-frame">
@@ -110,7 +110,7 @@ function About() {
   return (
     <section id="about" className="section section-about">
       <div className="container">
-        <SectionHead num="05" name="About the operator" meta="ADAM · NORTHERN COLORADO" />
+        <SectionHead num="08" name="About the operator" meta="ADAM · NORTHERN COLORADO" />
 
         <div className="rail-grid">
           <div className="rail-prose about-prose">
@@ -222,7 +222,7 @@ function Ask() {
   return (
     <section id="ask" className="section section-ask">
       <div className="container">
-        <SectionHead num="06" name="The ask" meta="RESOURCES THAT ACCELERATE" />
+        <SectionHead num="09" name="The ask" meta="RESOURCES THAT ACCELERATE" />
 
         <div className="ask-wrap">
           <div className="ask-pitch">
@@ -277,7 +277,7 @@ function Contact({ email = 'contact@riftroot.com' }) {
   return (
     <section id="contact" className="section section-contact">
       <div className="container">
-        <SectionHead num="07" name="Get in touch" meta="OPEN TO PARTNERS" />
+        <SectionHead num="10" name="Get in touch" meta="OPEN TO PARTNERS" />
 
         <div className="contact-wrap">
           <div className="contact-channels">

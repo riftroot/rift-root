@@ -4,7 +4,7 @@
 
 /* ==============================
    FOOTER — shared global footer
-   Appears on all sub-pages (/erebus, /surface, /demo).
+   Appears on the home page (sub-pages no longer exist).
    Dark + violet aesthetic, mono font, compact.
    ============================== */
 function Footer() {
@@ -42,12 +42,10 @@ function Footer() {
           </a>
           <span className="site-footer-sep" aria-hidden="true">&middot;</span>
           <a
-            href="https://demo.riftroot.com"
+            href="#demo"
             className="site-footer-link"
-            target="_blank"
-            rel="noopener"
           >
-            Demo
+            Compositor economics ↓
           </a>
         </nav>
 

@@ -1,6 +1,6 @@
 /* global React, useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakToggle, TweakSlider */
-/* global Nav, Hero, Marquee, Thesis, Erebus, BeyondGen, Why, About, Ask, Contact */
-/* global ErebusPage, SurfacePage, Footer */
+/* global Nav, Hero, Marquee, Thesis, HostileNetwork, Erebus, Surface, Demo, BeyondGen, Why, About, Ask, Contact */
+/* global Footer */
 /* global Router, Route, useLocation, navigate */
 const { useEffect, useRef } = React;
 
@@ -43,7 +43,10 @@ function App() {
         <Hero />
         {tweaks.marqueeOn && <Marquee />}
         <Thesis />
+        <HostileNetwork />
         <Erebus />
+        <Surface />
+        <Demo />
         <BeyondGen />
         <Why />
         <About />
@@ -104,25 +107,11 @@ function App() {
   );
 }
 
-function DemoRedirect() {
-  useEffect(() => { window.location.replace('https://demo.riftroot.com'); }, []);
-  return null;
-}
-
-// --- Router mount: add new routes here (e.g. /surface, /demo) ---
+// --- Router mount ---
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Router>
     <Route path="/">
       <App />
-    </Route>
-    <Route path="/erebus">
-      <ErebusPage />
-    </Route>
-    <Route path="/surface">
-      <SurfacePage />
-    </Route>
-    <Route path="/demo">
-      <DemoRedirect />
     </Route>
   </Router>
 );
