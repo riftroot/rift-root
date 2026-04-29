@@ -1,33 +1,25 @@
 #!/usr/bin/env bash
-# rift-root-site · pre-bundle JSX → app.js so the browser doesn't pay
-# Babel-standalone's ~2 MB transpile tax on every load.
+# rift-root-site (PROD) · Vite build wrapper.
 #
-# Each file gets wrapped in its own IIFE so duplicate top-level declarations
-# (e.g. `const { useEffect } = React` in multiple files) don't collide.
+# Produces site/public/app-[hash].js as a single self-executing IIFE bundle.
+# React + ReactDOM are externalized — they load via <script> tags in
+# index.html (CDN). See vite.prod.config.mjs for the full rationale.
 set -euo pipefail
-cd "$(dirname "$0")/public"
 
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+# Run from repo root (one level up from this script).
+cd "$(dirname "$0")/.."
 
-for f in tweaks-panel.jsx components/header.jsx components/sections.jsx components/about-contact.jsx components/erebus-page.jsx app.jsx; do
-  base="$(basename "$f" .jsx)"
-  out="$TMP/${base}.js"
-  npx --yes esbuild@0.25.0 "$f" \
-    --loader:.jsx=jsx \
-    --target=es2020 \
-    --minify \
-    --legal-comments=none \
-    --outfile="$out" >/dev/null
-done
+if [ ! -d node_modules/vite ]; then
+  echo "==> installing vite + plugin-react"
+  npm install --no-audit --no-fund --silent
+fi
 
-# Wrap each transpiled chunk in an IIFE then concatenate.
-{
-  for base in tweaks-panel header sections about-contact erebus-page app; do
-    printf '(function(){'
-    cat "$TMP/${base}.js"
-    printf '\n})();\n'
-  done
-} > app.js
+npx vite build --config vite.prod.config.mjs
 
-echo "✔ built public/app.js ($(du -h app.js | cut -f1))"
+HASHED="$(ls -1 site/public/app-*.js 2>/dev/null | head -1)"
+if [ -n "$HASHED" ]; then
+  echo "==> built ${HASHED} ($(du -h "$HASHED" | cut -f1))"
+else
+  echo "==> WARN: no hashed app-*.js found in site/public/" >&2
+  exit 1
+fi

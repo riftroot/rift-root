@@ -13,8 +13,8 @@
 
 SITE_DIR  := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))/site
 DEMO_DIR  := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-SITE_NAME := rift-root-site
-DEMO_NAME := rift-bifrost-demo
+SITE_NAME := riftroot-edge
+DEMO_NAME := riftroot-demo
 
 .PHONY: deploy-site deploy-demo deploy-all smoke verify
 

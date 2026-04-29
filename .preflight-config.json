@@ -17,16 +17,19 @@
     },
     "prod": {
       "url": "https://riftroot.com",
-      "bundle_path": "/app.js",
+      "bundle_path": "/app-*.js",
       "must_contain": [
+        "Compositor economics",
         "Erebus Edge",
-        "Adam"
+        "Built for the network"
       ],
       "must_not_contain": [
-        "riftroot-qa.mock1ngbb.com"
+        "riftroot-qa.mock1ngbb.com",
+        "TODO",
+        "DEBUG_ONLY"
       ],
       "build_cmd": "bash site/build.sh",
-      "local_bundle_path": "site/public/app.js"
+      "local_bundle_path": "site/public/app-*.js"
     }
   }
 }
