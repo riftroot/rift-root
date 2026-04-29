@@ -1,33 +1,24 @@
 #!/usr/bin/env bash
-# rift-root-site · pre-bundle JSX → app.js so the browser doesn't pay
-# Babel-standalone's ~2 MB transpile tax on every load.
+# rift-root-site (QA) · Vite build wrapper.
 #
-# Each file gets wrapped in its own IIFE so duplicate top-level declarations
-# (e.g. `const { useEffect } = React` in multiple files) don't collide.
+# Produces site-qa/public/app.js as a single self-executing IIFE bundle.
+# React + ReactDOM are externalized — they load via <script> tags in
+# index.html (CDN). See vite.qa.config.mjs for the full rationale.
+#
+# Dev (HMR): from repo root, run `npm run dev`. Edit any .jsx file under
+# site-qa/public/ and the browser hot-reloads without a full refresh.
 set -euo pipefail
-cd "$(dirname "$0")/public"
 
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+# Run from repo root (one level up from this script).
+cd "$(dirname "$0")/.."
 
-for f in tweaks-panel.jsx components/header.jsx components/footer.jsx components/sections.jsx components/about-contact.jsx components/router.jsx app.jsx; do
-  base="$(basename "$f" .jsx)"
-  out="$TMP/${base}.js"
-  npx --yes esbuild@0.25.0 "$f" \
-    --loader:.jsx=jsx \
-    --target=es2020 \
-    --minify \
-    --legal-comments=none \
-    --outfile="$out" >/dev/null
-done
+# Lazy-install vite if node_modules is missing. Keeps `bash site-qa/build.sh`
+# a one-command bootstrap on a fresh checkout — same UX as the old script.
+if [ ! -d node_modules/vite ]; then
+  echo "==> installing vite + plugin-react"
+  npm install --no-audit --no-fund --silent
+fi
 
-# Wrap each transpiled chunk in an IIFE then concatenate.
-{
-  for base in tweaks-panel header footer sections about-contact router app; do
-    printf '(function(){'
-    cat "$TMP/${base}.js"
-    printf '\n})();\n'
-  done
-} > app.js
+npx vite build --config vite.qa.config.mjs
 
-echo "✔ built public/app.js ($(du -h app.js | cut -f1))"
+echo "==> built site-qa/public/app.js ($(du -h site-qa/public/app.js | cut -f1))"

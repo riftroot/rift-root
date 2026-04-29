@@ -1,0 +1,13 @@
+{
+  "name": "rift-root",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite.qa.config.mjs",
+    "build:qa": "vite build --config vite.qa.config.mjs"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10",
+    "@vitejs/plugin-react": "^4.3.3"
+  }
+}
