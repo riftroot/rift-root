@@ -17,12 +17,18 @@ cd "$(dirname "$0")/.."
 bash site-qa/build.sh
 
 VERSION="$(git rev-parse --short HEAD)-$(date +%s)"
-echo "==> deploy-qa: VERSION=${VERSION}"
+APP_BUNDLE="$(ls -1 site-qa/public/app-*.js 2>/dev/null | head -1 | xargs -I{} basename {})"
+if [ -z "$APP_BUNDLE" ]; then
+  echo "==> deploy-qa: ERROR — no hashed app-*.js found" >&2
+  exit 1
+fi
+echo "==> deploy-qa: VERSION=${VERSION} APP_BUNDLE=${APP_BUNDLE}"
 
 npx wrangler@latest deploy \
   -c wrangler.qa.toml \
   --name riftroot-qa-edge \
-  --var "VERSION:${VERSION}"
+  --var "VERSION:${VERSION}" \
+  --var "APP_BUNDLE:${APP_BUNDLE}"
 
 echo "==> verifying"
 curl -s https://riftroot-qa.mock1ngbb.com/api/version

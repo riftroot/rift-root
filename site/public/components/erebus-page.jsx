@@ -189,18 +189,7 @@ function ErebusPage() {
 
   return (
     <div className="erebus-page">
-      {/* Fixed top bar */}
-      <nav className="ep-topbar" aria-label="Architecture page navigation">
-        <div className="ep-topbar-inner">
-          <a href="/" className="ep-back">
-            <span className="ep-back-arrow">←</span>
-            riftroot.com
-          </a>
-          <span className="ep-topbar-chip">EREBUS EDGE · ARCHITECTURE</span>
-        </div>
-      </nav>
-
-      <main id="main-content">
+      <div id="main-content">
 
         {/* ──────────────────── LEAD ──────────────────── */}
         <section className="ep-lead" aria-labelledby="ep-lead-title">
@@ -208,23 +197,22 @@ function ErebusPage() {
             <div className="ep-eyebrow">
               <span className="chip violet">EREBUS EDGE</span>
               <span className="chip cyan">ARCHITECTURE</span>
-              <span className="chip grey">HOSTILE-NETWORK-FIRST</span>
+              <span className="chip grey">FIVE LAYERS · HOSTILE-NETWORK-FIRST</span>
             </div>
 
             <h1 id="ep-lead-title" className="ep-title">
-              Built for the network<br />
-              that <em>blocks everything.</em>
+              Five layers.<br />
+              Here&apos;s why <em>the demo works.</em>
             </h1>
 
             <div className="ep-hostile-block">
               <p className="ep-hostile-text">
-                Most AI tooling assumes unconstrained outbound access to provider APIs.
-                In a firewalled enterprise, air-gapped environment, or regulated network,
-                that assumption breaks completely — you literally cannot call Anthropic
-                from inside the perimeter. <em>Erebus Edge is built for exactly that
-                condition</em>: keys stay server-side in a KV vault, zero-trust auth
-                through Cloudflare Access gates every surface, and the only traffic
-                crossing the perimeter is webhook ingest.
+                The compositor replay you just watched — ingest through reward — runs on
+                these five layers. Perimeter handles zero-trust auth and webhook-only ingest.
+                Control plane schedules and coordinates. Intelligence is the MAB router where
+                the routing decisions you saw happen. Execution is the stateless worker fleet
+                that ran the tasks. Observability closes the reward loop — the signal that
+                teaches the next run. Most AI tooling skips layers two through five entirely.
               </p>
             </div>
           </div>
@@ -262,7 +250,7 @@ function ErebusPage() {
                 System layers
               </span>
               <h2 id="ep-arch-title" className="ep-arch-title">
-                Five layers. Click any to expand.
+                Five layers — one for each stage you watched. Click any to expand.
               </h2>
             </div>
             <ArchDiagram />
@@ -274,43 +262,38 @@ function ErebusPage() {
           <div className="container">
             <span className="mono-label">
               <span className="dot" aria-hidden="true" />
-              Hostile-network design
+              Perimeter design — layer 01
             </span>
             <h2 id="ep-deep-title" className="ep-arch-title" style={{marginTop: '16px'}}>
-              Three constraints.<br />Every design decision follows from them.
+              Three constraints.<br />Every perimeter decision follows from them.
             </h2>
 
             <div className="ep-deep-grid" role="list">
               <DeepCard num="01" title="No outbound provider calls from client processes.">
-                LLM provider keys — Anthropic, DeepSeek, Gemini, Perplexity — live
-                exclusively in a server-side KV vault scoped to the control plane worker.
-                The execution tier never receives, caches, or transmits credentials. A
-                task handler dispatched into a MicroVM sandbox has no route to any
-                external provider; it receives only the resolved output piped from the
-                LLM Proxy, which itself runs inside the perimeter. An operator running
-                inside a regulated network can audit the full credential surface without
-                touching execution code.
+                The demo&apos;s route&amp;execute stage dispatches to LLMs — but the execution
+                tier never holds credentials. LLM provider keys — Anthropic, DeepSeek,
+                Gemini, Perplexity — live exclusively in a server-side KV vault scoped to
+                the control plane. A task handler in a MicroVM sandbox receives only
+                resolved output piped from the LLM Proxy. An operator inside a regulated
+                network can audit the full credential surface without touching execution code.
               </DeepCard>
 
               <DeepCard num="02" title="Cloudflare Access on every surface.">
                 Admin endpoints, webhook receivers, the coordinator API, and operator
                 dashboards all sit behind Cloudflare Access policies enforced at the
-                edge — before any request reaches application logic. There is no
-                unauthenticated surface area beyond the public documentation and
-                marketing site. Zero-trust auth means that even a fully compromised
-                host inside the network cannot laterally reach the control plane without
-                a valid identity token. Session tokens are short-lived; no standing
-                access is granted to service accounts.
+                edge — before any request reaches application logic. Zero-trust auth means
+                even a fully compromised host inside the network cannot laterally reach the
+                control plane without a valid identity token. Session tokens are short-lived;
+                no standing access is granted to service accounts.
               </DeepCard>
 
               <DeepCard num="03" title="Webhook-only inbound.">
-                The only path into the system from external sources is signed webhooks
-                from an allowlist of approved sources: GitHub, Linear, and CI providers.
-                Every payload is verified with HMAC-SHA256 before any parsing occurs.
-                A 5-minute deduplication TTL prevents replay attacks. There is no
-                polling loop, no long-lived inbound TCP connection, and no agent that
-                periodically reaches outward to check for work. The perimeter only
-                opens when a signed event arrives; everything else is default-deny.
+                Work enters through the ingest stage you saw in the demo: signed webhooks
+                from an allowlist of approved sources — GitHub, Linear, CI providers —
+                verified with HMAC-SHA256 before any parsing occurs. A 5-minute deduplication
+                TTL prevents replay attacks. No polling loop, no long-lived inbound TCP,
+                no agent reaching outward for work. The perimeter opens when a signed event
+                arrives; everything else is default-deny.
               </DeepCard>
             </div>
           </div>
@@ -321,38 +304,40 @@ function ErebusPage() {
           <div className="container">
             <span className="mono-label">
               <span className="dot" aria-hidden="true" />
-              Resource partnerships
+              Resource partnerships — what the ask is for
             </span>
             <h2 id="ep-partners-title" className="ep-arch-title" style={{marginTop: '16px'}}>
-              Programs that accelerate this work.
+              Hardware diversity is the empirical input the MAB optimizer needs most.
             </h2>
             <p style={{
               fontFamily: 'var(--font-mono)', fontSize: '14px',
               color: 'var(--grey-3)', lineHeight: '1.7',
               maxWidth: '60ch', marginTop: '16px', marginBottom: '0',
             }}>
-              Rift Root is not seeking venture capital. Compute credits, inference
-              budgets, hardware access, and design partnerships compound the MAB
-              learning cycles. The contact for all program inquiries is{' '}
+              Not capital — compute credits, inference budgets, and bare-metal access compound
+              the routing priors. Each new silicon type the bandit can dispatch to is a new arm;
+              each arm produces empirical data the cloud&apos;s abstraction layers hide.
+              That&apos;s what section 06 on the home tab is asking for. The contact for all
+              program inquiries is{' '}
               <a href="mailto:contact@riftroot.com" style={{color: 'var(--violet-bright)', borderBottom: '1px solid var(--violet)'}}>contact@riftroot.com</a>.
             </p>
 
             <div className="ep-partners-grid" style={{marginTop: '32px'}} role="list">
               <PartnerCell
                 name="AWS Activate"
-                desc="Cloud compute and infrastructure credits to expand the execution pool and reduce cold-start latency in the worker fleet."
+                desc="Execution layer credits — expands the worker fleet and reduces cold-start latency. More runs means more reward signal for the MAB router."
               />
               <PartnerCell
                 name="Google for Startups"
-                desc="GCP compute and Vertex AI inference credits that add hardware diversity to the MAB backend pool, improving routing priors."
+                desc="GCP compute and Vertex AI inference credits. Each new inference backend is a new bandit arm; GCP silicon adds diversity the routing prior needs."
               />
               <PartnerCell
                 name="Cloudflare for Startups"
-                desc="The perimeter layer of Erebus Edge runs on Cloudflare Workers, Durable Objects, and KV. Extended limits accelerate the control plane."
+                desc="The perimeter and control plane run on Workers, Durable Objects, and KV. Extended limits let the ingest and coordination layers run without throttling."
               />
               <PartnerCell
                 name="NVIDIA Inception"
-                desc="Bare-metal GPU inference access that the cloud abstracts away. Silicon-level diversity is the empirical input the MAB optimizer needs most."
+                desc="Bare-metal GPU inference. The cloud abstracts away silicon-level variance — NVIDIA hardware in the pool surfaces the empirical data the MAB optimizer actually needs."
               />
             </div>
           </div>
@@ -361,9 +346,6 @@ function ErebusPage() {
         {/* ──────────────────── FOOTER ──────────────────── */}
         <footer className="ep-footer">
           <div className="container ep-footer-inner">
-            <a href="/" className="ep-footer-back">
-              <span aria-hidden="true">←</span> back to riftroot.com
-            </a>
             <div className="ep-footer-stamp">
               <span className="ep-footer-dot" aria-hidden="true" />
               RIFT ROOT LLC · EREBUS EDGE · 2026
@@ -371,7 +353,7 @@ function ErebusPage() {
           </div>
         </footer>
 
-      </main>
+      </div>
     </div>
   );
 }
