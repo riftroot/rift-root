@@ -1,33 +1,35 @@
 /* global React, SectionHead, LogoGlyph */
 
 /* ==============================
-   WHY — the operator as forcing function; MAB data as compounding asset
+   WHY — operating infrastructure framing
    ============================== */
 function Why() {
   return (
     <section id="why" className="section section-why">
       <div className="container">
-        <SectionHead num="04" name="Why this exists" meta="OPERATOR AS FORCING FUNCTION · DATA COMPOUNDS" />
+        <SectionHead num="07" name="Why this exists" meta="OPERATING INFRASTRUCTURE · NOT A PRODUCT" />
 
         <div className="why-hero">
           <div className="why-frame">
             <div className="chip violet why-chip">THE HONEST FRAME</div>
             <h2 className="display why-title">
-              I built Erebus Edge because<br/>
-              the <em className="cyan">standard playbook</em><br/>
-              didn&apos;t work.
+              Erebus Edge is not for sale.<br/>
+              It is the <em className="cyan">substrate I use</em><br/>
+              to do my own work faster<br/>
+              than anyone else can.
             </h2>
             <p className="why-lede">
-              A one-person shop is a forcing function: every engagement runs on the mesh —
-              no team to absorb bad tooling, no headcount buffer for slow routing. The MAB
-              stack learns across every pipeline run, every codebase it touches, every model
-              arm it dispatches. The demo shows that learning loop in motion.
+              I&apos;m not academic. I&apos;m not running research. I&apos;m not (yet) open-source.
+              Rift Root is a one-person systems shop, and Erebus Edge is the operating
+              infrastructure I run my engagements on. The MAB stack is the intelligence
+              layer that learns across every engagement, every pipeline run, every
+              codebase it touches.
             </p>
             <p className="why-lede">
-              The compounding asset is the MAB data itself — production-hardened evidence
-              of what works, sliced by task type, model, provider, and x-driven approach.
-              Not for sale. Not for licensing. OSS comes when the bank is worth releasing.
-              Section 05 is who builds and runs this.
+              The compounding asset is the <em>system of MAB data</em> — real-world,
+              production-hardened evidence of what works and what doesn&apos;t, sliced by
+              task type, model, provider, and x-driven approach. One day that gets
+              open-sourced; today it earns its keep.
             </p>
           </div>
 
@@ -35,28 +37,49 @@ function Why() {
             <span className="corner tl" /><span className="corner tr" />
             <span className="corner bl" /><span className="corner br" />
             <div className="why-pitch-head">
-              <span className="chip cyan">TRANSPARENCY LAYER</span>
-              <span className="why-pitch-meta mono-label">DEMO · NOT DOCS</span>
+              <span className="chip cyan">VENDOR PITCH</span>
+              <span className="why-pitch-meta mono-label">DATA-FOR-COMPUTE</span>
             </div>
             <p className="why-pitch-body">
-              The routing priors, reward histories, and convergence telemetry are the
-              experience bank — releasing them before they represent real breadth dilutes
-              their value. OSS comes when the bank is worth releasing, not before.
+              A private AI execution mesh that routes LLM workloads across multi-vendor
+              hardware using multi-armed bandit optimization. It is the operational
+              backbone for systems work — not a product for sale, but infrastructure
+              I run myself.
             </p>
             <p className="why-pitch-body">
-              Until then: the demo is the transparency layer. Every routing decision
-              visible, every reward shape logged, every self-heal recorded. The architecture
-              tab is the layer-by-layer explanation of what you just watched.
+              Compute access accelerates the learning cycles of the MAB, which directly
+              improves the intelligence of the system over time. More hardware diversity
+              in the backend pool means richer convergence data and faster maturation
+              of the routing priors.
             </p>
+            <div className="exchange">
+              <div className="ex-side">
+                <span className="mono-label">YOU PROVIDE</span>
+                <ul>
+                  <li>Compute / inference credits</li>
+                  <li>Hardware diversity in the pool</li>
+                  <li>Storage + queue + egress</li>
+                </ul>
+              </div>
+              <div className="ex-arrow">⇌</div>
+              <div className="ex-side">
+                <span className="mono-label">YOU GET</span>
+                <ul>
+                  <li>Empirical inference profiles on your silicon</li>
+                  <li>Real workloads, not synthetic benchmarks</li>
+                  <li>Convergence telemetry from production routing</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="why-grid">
           {[
-            { k: "Not academic",          v: "No paper. No grant cycle. Ships work today.", c: "cyan" },
-            { k: "Not research",          v: "Failure costs real time. That is the discipline.", c: "violet" },
-            { k: "Not open-source — yet", v: "Data compounds first. OSS comes when the bank is worth releasing.", c: "lime" },
-            { k: "Not seeking VC",        v: "No dilution. No board. Resources, not capital — section 06.", c: "grey" }
+            { k: "Not academic",          v: "No paper. No grant cycle. Production-first.", c: "cyan" },
+            { k: "Not research",          v: "The system has to ship work today.", c: "violet" },
+            { k: "Not open-source — yet", v: "Code stays private; the data compounds. OSS comes when the experience-bank is worth releasing.", c: "lime" },
+            { k: "Not seeking VC",        v: "No dilution. No board. Resources, not capital.", c: "grey" }
           ].map((p, i) => <Posture key={p.k} idx={i} {...p} />)}
         </div>
       </div>
@@ -87,35 +110,38 @@ function About() {
   return (
     <section id="about" className="section section-about">
       <div className="container">
-        <SectionHead num="05" name="About the operator" meta="SAME PERSON WHO BUILDS IT RUNS IT" />
+        <SectionHead num="08" name="About the operator" meta="ADAM · NORTHERN COLORADO" />
 
         <div className="rail-grid">
           <div className="rail-prose about-prose">
             <p className="about-lede display">
-              Same operator who builds it
-              <em className="cyan"> runs it</em> on real work.
+              The thesis behind Rift Root is simple: the right system
+              <em className="cyan"> absorbs the friction</em> so the operator does not have to.
             </p>
 
             <p className="about-text">
-              That constraint was formed in an Army S6 shop — sole IT support for a battalion
-              of soldiers who needed accounts, networks, and workstations working, especially at
-              <span className="hl-mono"> 0200</span> before a training event. Nobody cared about
-              elegance. They cared about uptime. That is still the only metric that matters.
+              That idea was formed in an Army S6 shop — sole IT support for a battalion of
+              soldiers who needed their accounts, networks, and workstations working,
+              especially at <span className="hl-mono">0200</span> before a training event.
+              Nobody there cared about elegance. They cared about uptime. That is still the
+              only metric that matters.
             </p>
 
             <p className="about-text">
-              The years since: process improvement, dev coordination as translation layer
-              between contractors and operations, cloud infrastructure, cross-domain
-              system-of-systems architecture. Same problem in different clothes — how do
+              The years since have run through process improvement, dev coordination as a
+              translation layer between contractors and operations, cloud infrastructure
+              engineering, and cross-domain system-of-systems architecture. The through-line
+              is not the job titles. It is the same problem in different clothes: how do
               you make a complex system reliable for people who cannot afford to think
-              about its complexity? Solve it at the gate, before it becomes someone
-              else&apos;s emergency.
+              about its complexity? The answer is always the same — solve the full problem
+              once, at the gate, before it becomes someone else&apos;s emergency.
             </p>
 
             <p className="about-text">
-              Erebus Edge is that question applied to AI execution infrastructure — built,
-              run, and broken by one person in Northern Colorado before it touches anyone
-              else&apos;s environment. Section 06 is how outside resources fit into it.
+              Erebus Edge is that question applied to AI execution infrastructure. It is
+              being built, run, and broken by one person in Northern Colorado before it
+              touches anyone else&apos;s environment. That is not a limitation. That is the
+              methodology.
             </p>
 
             <div className="about-sig">
@@ -181,61 +207,40 @@ function SideRail({ index, caption, data = [], stamp, accent = 'violet' }) {
 }
 
 /* ==============================
-   ASK — resources that compound the MAB; not capital
+   ASK
    ============================== */
 function Ask() {
   const lines = [
-    { k: 'Compute credits',      v: 'more runs → more reward signal → tighter routing priors', c: 'cyan' },
-    { k: 'Inference credits',    v: 'each new model arm widens what the bandit can explore',   c: 'violet' },
-    { k: 'Bare-metal inference', v: 'silicon diversity the cloud abstracts away — the demo shows what your fleet actually does to a routing prior', c: 'lime' },
-    { k: 'Storage + queue',      v: 'cache topology depth + batch ingestion throughput',        c: 'violet' },
-    { k: 'Egress allowance',     v: 'cross-cloud compositor traffic at scale',                  c: 'lime' },
-    { k: 'Design partners',      v: 'real workloads stress-test Erebus Edge against conditions the operator alone cannot generate', c: 'cyan' },
+    { k: 'Compute credits',          v: 'edge runtimes, serverless workers, sandbox burst', c: 'cyan' },
+    { k: 'Inference credits',        v: 'across multi-vendor model arms',                   c: 'violet' },
+    { k: 'Bare-metal inference',     v: 'silicon diversity the cloud abstracts away',       c: 'lime' },
+    { k: 'Hardware diversity',       v: 'enriches MAB convergence data across the pool',    c: 'cyan' },
+    { k: 'Storage + queue',          v: 'cache topology + batch ingestion',                 c: 'violet' },
+    { k: 'Egress allowance',         v: 'cross-cloud compositor traffic',                   c: 'lime' },
+    { k: 'Design partners',          v: 'real workloads that stress-test Erebus Edge against production conditions', c: 'cyan' },
   ];
   return (
     <section id="ask" className="section section-ask">
       <div className="container">
-        <SectionHead num="06" name="The ask" meta="RESOURCES · NOT CAPITAL" />
+        <SectionHead num="09" name="The ask" meta="RESOURCES THAT ACCELERATE" />
 
         <div className="ask-wrap">
           <div className="ask-pitch">
             <h2 className="display ask-title">
-              Not capital.<br/>
-              <em className="cyan">Resources that compound</em><br/>
-              the MAB data.
+              Not seeking VC.<br/>
+              Seeking <em className="cyan">resources that accelerate.</em>
             </h2>
             <p className="ask-text">
-              The architecture tab shows the five layers. Every line item below maps
-              to a layer that gets richer with more data — hardware diversity expands
-              routing priors, bare-metal inference reveals silicon-level variance the
-              cloud abstracts away.
-              <em className="violet"> Cash dilutes; resources compound.</em>{' '}
-              The workloads stay where they run.
+              Rift Root is bootstrapped by design. <em className="violet">Cash dilutes; resources compound.</em>{' '}
+              Compute credits, inference budgets, bare-metal access, storage, tooling, and
+              design partners — anything that shortens the loop between hypothesis and
+              validated output. The resulting workloads stay where they run.
             </p>
             <p className="ask-text ask-text-dim">
               Open to any form of resource partnership that increases hardware diversity
               in the backend pool. If your program has access tiers not listed publicly,
               that conversation is welcome.
             </p>
-            <div className="exchange">
-              <div className="ex-side">
-                <span className="mono-label">YOU PROVIDE</span>
-                <ul>
-                  <li>Compute / inference credits</li>
-                  <li>Hardware diversity in the pool</li>
-                  <li>Storage + queue + egress</li>
-                </ul>
-              </div>
-              <div className="ex-arrow">⇌</div>
-              <div className="ex-side">
-                <span className="mono-label">YOU GET</span>
-                <ul>
-                  <li>Empirical inference profiles on your silicon</li>
-                  <li>Real workloads, not synthetic benchmarks</li>
-                  <li>Convergence telemetry from production routing</li>
-                </ul>
-              </div>
-            </div>
             <a href="#contact" className="btn btn-primary">
               Get in touch <span className="arrow">→</span>
             </a>
@@ -272,7 +277,7 @@ function Contact({ email = 'adam@riftroot.com' }) {
   return (
     <section id="contact" className="section section-contact">
       <div className="container">
-        <SectionHead num="07" name="Get in touch" meta="OPEN TO PARTNERS" />
+        <SectionHead num="10" name="Get in touch" meta="OPEN TO PARTNERS" />
 
         <div className="contact-wrap">
           <div className="contact-channels">
@@ -285,10 +290,9 @@ function Contact({ email = 'adam@riftroot.com' }) {
               The right conversation shortens the loop.
             </p>
             <p className="contact-prose-body">
-              If you run a developer program, have hardware to put in the pool, or
-              want real workloads stress-testing your inference stack — the address
-              is on the left. Watch the demo first. Read the architecture tab.
-              Then bring the resources from section 06.
+              If you run a developer program or want to see what
+              <em> Erebus Edge </em>
+              does on your hardware, the address is on the left.
             </p>
           </div>
         </div>

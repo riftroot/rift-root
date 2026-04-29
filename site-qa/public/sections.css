@@ -133,8 +133,7 @@ body[data-no-grid] .hero-grid { display: none; }
 .stat-sub { font-size: 11px; color: var(--grey-2); line-height: 1.4; max-width: 30ch; }
 
 /* ===== SECTIONS GENERAL ===== */
-.section { padding-block: var(--section-y); position: relative; border-top: 1px solid var(--line); }
-.section + .section { border-top: 1px solid var(--line); }
+.section { padding-block: var(--section-y); position: relative; }
 .section-thesis  { background: var(--ink-2); }
 .section-erebus  { background: var(--ink); }
 .section-beyond  { background: var(--ink-2); }
@@ -420,7 +419,6 @@ html body .ed-loop-text { color: rgb(181, 181, 189) !important; }
   .erebus-hero { grid-template-columns: 1.05fr 0.95fr !important; gap: 56px; align-items: stretch; }
   .erebus-hero-text { align-self: start; position: sticky; top: 88px; }
 }
-.erebus-rule { height: 1px; background: var(--line); margin: clamp(56px, 8vw, 88px) 0 clamp(40px, 6vw, 64px); }
 .erebus-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
 @media (min-width: 720px) { .erebus-grid { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1024px) { .erebus-grid { grid-template-columns: repeat(3, 1fr); } }

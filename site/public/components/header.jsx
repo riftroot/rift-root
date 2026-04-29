@@ -1,10 +1,6 @@
 /* global React */
 const { useState, useEffect } = React;
 
-function switchTab(name) {
-  window.location.hash = name;
-}
-
 /* ==============================
    LOGO MARK — small wordmark for nav and footer
    Uses the tinted SVG (light plaque + dark wordmark + violet dot).
@@ -17,6 +13,8 @@ function LogoGlyph({ size = 28 }) {
       alt="rift root"
       width={size}
       height={size}
+      decoding="async"
+      fetchpriority="high"
       style={{ height: size, width: size, display: 'block', objectFit: 'contain' }}
       className="nav-logo-img"
     />
@@ -25,10 +23,16 @@ function LogoGlyph({ size = 28 }) {
 
 /* ==============================
    NAV
+   mode="home"  → in-page anchor links for the marketing page (default)
+   mode="page"  → reserved for future sub-pages (currently only Home)
+   Auto-detects from window.location.pathname when no mode prop is passed.
    ============================== */
-function Nav({ tab = 'home' }) {
+function Nav({ mode }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Auto-detect mode from pathname if not explicitly passed
+  const resolvedMode = mode || (window.location.pathname === '/' ? 'home' : 'page');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -36,20 +40,34 @@ function Nav({ tab = 'home' }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const links = [
-    { href: '#thesis',  label: 'Thesis',      num: '01' },
-    { href: '#erebus',  label: 'Erebus Edge', num: '02' },
-    { href: '#beyond',  label: 'Beyond Gen',  num: '03' },
-    { href: '#why',     label: 'Why',         num: '04' },
-    { href: '#about',   label: 'About',       num: '05' },
-    { href: '#ask',     label: 'The Ask',     num: '06' },
-    { href: '#contact', label: 'Contact',     num: '07' },
+  // home mode: in-page anchor links
+  const homeLinks = [
+    { href: '#thesis',  label: 'Thesis',          num: '01' },
+    { href: '#hostile', label: 'Hostile Network', num: '02' },
+    { href: '#erebus',  label: 'Erebus Edge',     num: '03' },
+    { href: '#surface', label: 'Surface',         num: '04' },
+    { href: '#demo',    label: 'Demo',            num: '05' },
+    { href: '#beyond',  label: 'Beyond Gen',      num: '06' },
+    { href: '#why',     label: 'Why',             num: '07' },
+    { href: '#about',   label: 'About',           num: '08' },
+    { href: '#ask',     label: 'The Ask',         num: '09' },
+    { href: '#contact', label: 'Contact',         num: '10' },
   ];
+
+  // page mode: top-level page links
+  const pageLinks = [
+    { href: '/',        label: 'Home',         num: '01' },
+  ];
+
+  const links = resolvedMode === 'page' ? pageLinks : homeLinks;
+
+  // Logo href: always go to root
+  const logoHref = resolvedMode === 'page' ? '/' : '#top';
 
   return (
     <header className={`nav ${scrolled ? 'is-scrolled' : ''}`}>
       <div className="nav-inner container">
-        <a href="#top" className="nav-mark" aria-label="Rift Root home">
+        <a href={logoHref} className="nav-mark" aria-label="Rift Root home">
           <LogoGlyph size={32} />
           <span className="nav-wordmark">
             <span>rift</span><span className="dim">/</span><span>root</span>
@@ -66,29 +84,13 @@ function Nav({ tab = 'home' }) {
           ))}
         </nav>
 
-        <nav className="nav-tabs" aria-label="Site tabs">
-          <button
-            className={`nav-tab${tab === 'home' ? ' is-active' : ''}`}
-            onClick={() => switchTab('home')}
-          >
-            {tab === 'home' && <span className="dot" aria-hidden="true" />}
-            home
-          </button>
-          <button
-            className={`nav-tab${tab === 'demo' ? ' is-active' : ''}`}
-            onClick={() => switchTab('demo')}
-          >
-            {tab === 'demo' && <span className="dot" aria-hidden="true" />}
-            demo
-          </button>
-          <button
-            className={`nav-tab${tab === 'architecture' ? ' is-active' : ''}`}
-            onClick={() => switchTab('architecture')}
-          >
-            {tab === 'architecture' && <span className="dot" aria-hidden="true" />}
-            architecture
-          </button>
-        </nav>
+        <a
+          href="#demo"
+          className="nav-cta"
+        >
+          <span className="dot" />
+          demo
+        </a>
 
         <button
           className={`nav-burger ${open ? 'is-open' : ''}`}
@@ -109,29 +111,14 @@ function Nav({ tab = 'home' }) {
               <span className="arrow">↗</span>
             </a>
           ))}
-          <div className="nav-mobile-tabs">
-            <button
-              className={`nav-mobile-tab${tab === 'home' ? ' is-active' : ''}`}
-              onClick={() => { setOpen(false); switchTab('home'); }}
-            >
-              <span className="dot" aria-hidden="true" />
-              home
-            </button>
-            <button
-              className={`nav-mobile-tab${tab === 'demo' ? ' is-active' : ''}`}
-              onClick={() => { setOpen(false); switchTab('demo'); }}
-            >
-              <span className="dot" aria-hidden="true" />
-              live demo
-            </button>
-            <button
-              className={`nav-mobile-tab${tab === 'architecture' ? ' is-active' : ''}`}
-              onClick={() => { setOpen(false); switchTab('architecture'); }}
-            >
-              <span className="dot" aria-hidden="true" />
-              architecture
-            </button>
-          </div>
+          <a
+            href="#demo"
+            className="nav-mobile-cta"
+            onClick={() => setOpen(false)}
+          >
+            <span className="dot" />
+            demo ↓
+          </a>
         </div>
       )}
     </header>
@@ -154,17 +141,17 @@ function Hero() {
 
         <div className="hero-body">
           <h1 className="display hero-title">
-            The standard playbook<br />
-            doesn&apos;t produce<br />
-            <em>near-infinite velocity.</em>
+            Near-infinite velocity<br />
+            for teams without<br />
+            <em>large-firm resources.</em>
           </h1>
 
           <div className="hero-side">
             <p className="hero-lede">
-              Academic rigor, RAG-first, VC-scale assumptions — none of that gets a one-person shop
-              shipping at the pace of a forty-person org. Erebus Edge is the
-              <span className="hl-cyan"> execution mesh</span> built because the standard
-              playbook didn&apos;t work. One operator. The system does the composition.
+              Erebus Edge is operating infrastructure for a one-person systems shop —
+              a cost-optimized, model-agnostic execution mesh built
+              <span className="hl-cyan"> agentic-first</span> by Rift Root LLC, so the
+              operator stays at the level where humans matter: decisions, taste, and direction.
             </p>
 
             <div className="hero-actions">
@@ -172,21 +159,13 @@ function Hero() {
                 Why this exists
                 <span className="arrow">→</span>
               </a>
-              <a href="#erebus" className="btn">
-                Erebus Edge
-              </a>
               <a
                 href="#demo"
                 className="btn"
-                aria-label="Open Erebus Edge live demo"
                 style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  switchTab('demo');
-                }}
               >
-                Watch it route
-                <span className="arrow">→</span>
+                Compositor economics
+                <span className="arrow">↓</span>
               </a>
             </div>
           </div>
@@ -194,7 +173,7 @@ function Hero() {
 
         <div className="hero-stats">
           <Stat k="∞" v="velocity ceiling" sub="bounded by horizontal scale, not headcount" accent="violet" />
-          <Stat k="MAB" v="reward shaping" sub="every decision teaches the system — cost drops as it learns" accent="cyan" />
+          <Stat k="MAB" v="reward shaping" sub="multi-armed bandits stacked on E2E SWU" accent="cyan" />
           <Stat k="$0" v="outside capital" sub="bootstrapped — not a VC pitch" accent="lime" />
           <Stat k="1" v="operator" sub="Adam — sole founder, Northern Colorado" accent="grey" />
         </div>

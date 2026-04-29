@@ -1,0 +1,32 @@
+<!doctype html>
+<!--
+  Dev-only HTML for `npm run dev` (Vite). Mirrors index.html but loads
+  entry.js as type=module so Vite serves each .jsx file separately and
+  HMR works for component edits.
+
+  Production keeps index.html (classic <script src="/app.js">). This file
+  is shipped alongside index.html; the worker only routes / → index.html
+  so it's never served in prod, but harmless if it leaks.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Rift Root LLC — DEV</title>
+  <meta name="theme-color" content="#0A0A0B" />
+
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/sections.css" />
+  <link rel="stylesheet" href="/why.css" />
+  <link rel="stylesheet" href="/erebus.css" />
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React 18 globals (CDN) — externalized in vite.qa.config.mjs -->
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+
+  <script type="module" src="/entry.js"></script>
+</body>
+</html>

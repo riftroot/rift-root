@@ -11,12 +11,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://challenges.cloudflare.com" />
   <link rel="preconnect" href="https://unpkg.com" crossorigin />
-  <link rel="preconnect" href="https://demo.riftroot.com" crossorigin />
-  <link rel="dns-prefetch" href="https://demo.riftroot.com" />
 
   <link rel="preload" as="script" href="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin />
   <link rel="preload" as="script" href="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin />
-  <link rel="preload" as="script" href="/app.js" />
+  <link rel="preload" as="script" href="/app-D2ZC39DU.js" />
 
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="sections.css" />
@@ -91,7 +89,7 @@
 <body>
   <div id="rr-gate" role="dialog" aria-label="human check">
     <div class="gate-card">
-      <img class="gate-mark" src="assets/riftroot-logo.svg" alt="rift root" onerror="this.src='uploads/make-this-connection-more-organic-like-roots-or-kn.svg'" />
+      <img class="gate-mark" src="assets/riftroot-logo.svg" alt="rift root" decoding="async" fetchpriority="high" onerror="this.src='uploads/make-this-connection-more-organic-like-roots-or-kn.svg'" />
       <h1>rift root</h1>
       <p>human check &middot; cloudflare turnstile</p>
       <div class="ts-host">
@@ -108,10 +106,9 @@
   <div id="rr-update-toast">new version available · tap to reload</div>
 
   <script>
-    // Gate-passed flag is shared across riftroot.com ↔ demo.riftroot.com via a
-    // cookie on the apex domain. sessionStorage stays as a fallback for origins
-    // outside .riftroot.com (e.g. rift-root.mock1ngbb.com) where the cookie
-    // domain= mismatch causes the browser to silently drop the Set-Cookie.
+    // Gate-passed flag stored in sessionStorage and cookie (for riftroot.com).
+    // sessionStorage is the fallback for origins outside .riftroot.com where
+    // the cookie domain= mismatch causes the browser to silently drop the Set-Cookie.
     function onRRGate() {
       var g = document.getElementById('rr-gate');
       if (g) g.classList.add('is-open');
@@ -135,7 +132,7 @@
 
   <script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
   <script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
-  <script defer src="/app.js"></script>
+  <script defer src="/app-D2ZC39DU.js"></script>
   <script defer src="/cache-bust.js"></script>
 </body>
 </html>
