@@ -21,4 +21,10 @@ fi
 
 npx vite build --config vite.qa.config.mjs
 
-echo "==> built site-qa/public/app.js ($(du -h site-qa/public/app.js | cut -f1))"
+HASHED="$(ls -1 site-qa/public/app-*.js 2>/dev/null | head -1)"
+if [ -n "$HASHED" ]; then
+  echo "==> built ${HASHED} ($(du -h "$HASHED" | cut -f1))"
+else
+  echo "==> WARN: no hashed app-*.js found in site-qa/public/" >&2
+  exit 1
+fi

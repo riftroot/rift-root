@@ -48,6 +48,23 @@ MUST_NOT_CONTAIN_LEN="$(jq ".targets[\"$TARGET\"].must_not_contain | length" "$C
 
 BUNDLE_URL="${URL}${BUNDLE_PATH}"
 
+# If the configured BUNDLE_PATH contains a glob (e.g. "/app-*.js"), fetch
+# the live HTML and resolve the actual hashed filename from the script tag.
+if printf '%s' "$BUNDLE_PATH" | grep -q '\*'; then
+  HTML_TMP="$(mktemp)"
+  curl -s "$URL" -o "$HTML_TMP"
+  RESOLVED="$(grep -oE '/app-[A-Za-z0-9_-]+\.js' "$HTML_TMP" | head -1 | sed 's/?.*$//')"
+  rm -f "$HTML_TMP"
+  if [ -n "$RESOLVED" ]; then
+    BUNDLE_PATH="$RESOLVED"
+    BUNDLE_URL="${URL}${RESOLVED}"
+    info "resolved hashed bundle: ${BUNDLE_PATH}"
+  else
+    fail "could not resolve hashed bundle from live HTML at $URL"
+    exit 1
+  fi
+fi
+
 # ── sha256 helper (macOS compat) ──────────────────────────────────────────────
 sha256_file() {
   if command -v sha256sum &>/dev/null; then
@@ -115,6 +132,16 @@ else
   cat "$BUILD_LOG"
   OVERALL_EXIT=1
 fi
+
+# If LOCAL_BUNDLE contains a glob, expand it (post-build).
+case "$LOCAL_BUNDLE" in
+  *'*'*)
+    EXPANDED="$(ls -1 $LOCAL_BUNDLE 2>/dev/null | head -1 || true)"
+    if [ -n "$EXPANDED" ]; then
+      LOCAL_BUNDLE="$EXPANDED"
+    fi
+    ;;
+esac
 
 # ── CHECK 4: hash comparison (WARN-only) ─────────────────────────────────────
 # Why WARN and not FAIL:
