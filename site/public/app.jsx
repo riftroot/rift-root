@@ -1,12 +1,39 @@
 /* global React, useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakToggle, TweakSlider */
 /* global Nav, Hero, Marquee, Thesis, Erebus, BeyondGen, Why, About, Ask, Contact */
 /* global ErebusPage */
-const { useEffect, useRef } = React;
+const { useState, useEffect, useRef } = React;
 
-/* ---- Route shim: /erebus renders the architecture page ---- */
-const __IS_EREBUS = window.location.pathname === '/erebus';
-if (__IS_EREBUS) {
-  ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(ErebusPage));
+/* ---- Tab routing ---- */
+const TAB_WHITELIST = ['home', 'demo', 'architecture'];
+
+function useTab() {
+  function resolveTab() {
+    const raw = (window.location.hash || '').replace('#', '') || 'home';
+    return TAB_WHITELIST.includes(raw) ? raw : 'home';
+  }
+
+  const [tab, setTab] = useState(resolveTab);
+
+  useEffect(() => {
+    // On initial load, if the hash is a section anchor (not a tab), scroll to it
+    const raw = (window.location.hash || '').replace('#', '');
+    if (raw && !TAB_WHITELIST.includes(raw)) {
+      requestAnimationFrame(() => {
+        const el = document.getElementById(raw);
+        if (el) el.scrollIntoView({ behavior: 'instant' });
+      });
+    }
+
+    const onHash = () => {
+      const t = resolveTab();
+      setTab(t);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  return tab;
 }
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
@@ -17,21 +44,8 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "marqueeOn": true
 }/*EDITMODE-END*/;
 
-function App() {
-  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
-
-  // Apply tweak attributes to <body>
-  useEffect(() => {
-    const b = document.body;
-    b.toggleAttribute('data-violet-low',   tweaks.violetIntensity === 'sparing');
-    b.toggleAttribute('data-violet-heavy', tweaks.violetIntensity === 'heavy');
-    b.toggleAttribute('data-density-tight', tweaks.density === 'tight');
-    b.toggleAttribute('data-density-loose', tweaks.density === 'loose');
-    b.toggleAttribute('data-mono', !!tweaks.monoOnly);
-    b.toggleAttribute('data-no-grid', !tweaks.showGrid);
-  }, [tweaks]);
-
-  // Fade-in observer
+/* ---- Tab: Home ---- */
+function HomeTab({ tweaks, setTweak }) {
   useEffect(() => {
     const els = document.querySelectorAll('[data-fade]');
     const io = new IntersectionObserver((entries) => {
@@ -43,7 +57,6 @@ function App() {
 
   return (
     <>
-      <Nav />
       <main>
         <Hero />
         {tweaks.marqueeOn && <Marquee />}
@@ -108,6 +121,58 @@ function App() {
   );
 }
 
-if (!__IS_EREBUS) {
-  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+/* ---- Tab: Demo ---- */
+function DemoTab() {
+  return (
+    <main className="tab-frame">
+      <div className="tab-meta">
+        <span className="dot" aria-hidden="true" />
+        EREBUS EDGE · COMPOSITOR REPLAY · each stage maps to a layer in the architecture tab →
+      </div>
+      <iframe
+        src="https://demo.riftroot.com"
+        title="Erebus Edge compositor replay — five stages, live reward signal"
+        className="tab-iframe"
+        allow="clipboard-write"
+        loading="lazy"
+      />
+    </main>
+  );
 }
+
+/* ---- Tab: Architecture ---- */
+function ArchitectureTab() {
+  return (
+    <main className="tab-architecture">
+      <ErebusPage />
+    </main>
+  );
+}
+
+/* ---- App root ---- */
+function App() {
+  const tab = useTab();
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  // Apply tweak attributes to <body>
+  useEffect(() => {
+    const b = document.body;
+    b.toggleAttribute('data-violet-low',   tweaks.violetIntensity === 'sparing');
+    b.toggleAttribute('data-violet-heavy', tweaks.violetIntensity === 'heavy');
+    b.toggleAttribute('data-density-tight', tweaks.density === 'tight');
+    b.toggleAttribute('data-density-loose', tweaks.density === 'loose');
+    b.toggleAttribute('data-mono', !!tweaks.monoOnly);
+    b.toggleAttribute('data-no-grid', !tweaks.showGrid);
+  }, [tweaks]);
+
+  return (
+    <>
+      <Nav tab={tab} />
+      {tab === 'home'         && <HomeTab tweaks={tweaks} setTweak={setTweak} />}
+      {tab === 'demo'         && <DemoTab />}
+      {tab === 'architecture' && <ArchitectureTab />}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);

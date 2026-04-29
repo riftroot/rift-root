@@ -1,6 +1,10 @@
 /* global React */
 const { useState, useEffect } = React;
 
+function switchTab(name) {
+  window.location.hash = name;
+}
+
 /* ==============================
    LOGO MARK — small wordmark for nav and footer
    Uses the tinted SVG (light plaque + dark wordmark + violet dot).
@@ -22,7 +26,7 @@ function LogoGlyph({ size = 28 }) {
 /* ==============================
    NAV
    ============================== */
-function Nav() {
+function Nav({ tab = 'home' }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -62,20 +66,29 @@ function Nav() {
           ))}
         </nav>
 
-        <a
-          href="https://demo.riftroot.com"
-          className="nav-cta"
-          rel="noopener"
-          aria-label="Open Erebus Edge live demo"
-          onClick={(e) => {
-            e.currentTarget.setAttribute('aria-busy', 'true');
-            e.currentTarget.classList.add('is-loading');
-            document.body.classList.add('is-leaving');
-          }}
-        >
-          <span className="dot" />
-          demo
-        </a>
+        <nav className="nav-tabs" aria-label="Site tabs">
+          <button
+            className={`nav-tab${tab === 'home' ? ' is-active' : ''}`}
+            onClick={() => switchTab('home')}
+          >
+            {tab === 'home' && <span className="dot" aria-hidden="true" />}
+            home
+          </button>
+          <button
+            className={`nav-tab${tab === 'demo' ? ' is-active' : ''}`}
+            onClick={() => switchTab('demo')}
+          >
+            {tab === 'demo' && <span className="dot" aria-hidden="true" />}
+            demo
+          </button>
+          <button
+            className={`nav-tab${tab === 'architecture' ? ' is-active' : ''}`}
+            onClick={() => switchTab('architecture')}
+          >
+            {tab === 'architecture' && <span className="dot" aria-hidden="true" />}
+            architecture
+          </button>
+        </nav>
 
         <button
           className={`nav-burger ${open ? 'is-open' : ''}`}
@@ -96,20 +109,29 @@ function Nav() {
               <span className="arrow">↗</span>
             </a>
           ))}
-          <a
-            href="https://demo.riftroot.com"
-            className="nav-mobile-cta"
-            rel="noopener"
-            onClick={(e) => {
-              setOpen(false);
-              e.currentTarget.setAttribute('aria-busy', 'true');
-              e.currentTarget.classList.add('is-loading');
-              document.body.classList.add('is-leaving');
-            }}
-          >
-            <span className="dot" />
-            live demo
-          </a>
+          <div className="nav-mobile-tabs">
+            <button
+              className={`nav-mobile-tab${tab === 'home' ? ' is-active' : ''}`}
+              onClick={() => { setOpen(false); switchTab('home'); }}
+            >
+              <span className="dot" aria-hidden="true" />
+              home
+            </button>
+            <button
+              className={`nav-mobile-tab${tab === 'demo' ? ' is-active' : ''}`}
+              onClick={() => { setOpen(false); switchTab('demo'); }}
+            >
+              <span className="dot" aria-hidden="true" />
+              live demo
+            </button>
+            <button
+              className={`nav-mobile-tab${tab === 'architecture' ? ' is-active' : ''}`}
+              onClick={() => { setOpen(false); switchTab('architecture'); }}
+            >
+              <span className="dot" aria-hidden="true" />
+              architecture
+            </button>
+          </div>
         </div>
       )}
     </header>
@@ -132,41 +154,39 @@ function Hero() {
 
         <div className="hero-body">
           <h1 className="display hero-title">
-            Near-infinite velocity<br />
-            for teams without<br />
-            <em>large-firm resources.</em>
+            The standard playbook<br />
+            doesn&apos;t produce<br />
+            <em>near-infinite velocity.</em>
           </h1>
 
           <div className="hero-side">
             <p className="hero-lede">
-              Rift Root LLC is operating infrastructure for a one-person systems shop —
-              a cost-optimized, model-agnostic execution mesh built
-              <span className="hl-cyan"> agentic-first</span>, so the operator stays
-              at the level where humans matter: decisions, taste, and direction.
+              Academic rigor, RAG-first, VC-scale assumptions — none of that gets a one-person shop
+              shipping at the pace of a forty-person org. Erebus Edge is the
+              <span className="hl-cyan"> execution mesh</span> built because the standard
+              playbook didn&apos;t work. One operator. The system does the composition.
             </p>
 
             <div className="hero-actions">
-              <a href="#erebus" className="btn btn-primary">
-                See Erebus Edge
+              <a href="#why" className="btn btn-primary">
+                Why this exists
                 <span className="arrow">→</span>
               </a>
-              <a href="#why" className="btn">
-                Why this exists
+              <a href="#erebus" className="btn">
+                Erebus Edge
               </a>
               <a
-                href="https://demo.riftroot.com"
+                href="#demo"
                 className="btn"
-                rel="noopener"
                 aria-label="Open Erebus Edge live demo"
                 style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}
                 onClick={(e) => {
-                  e.currentTarget.setAttribute('aria-busy', 'true');
-                  e.currentTarget.classList.add('is-loading');
-                  document.body.classList.add('is-leaving');
+                  e.preventDefault();
+                  switchTab('demo');
                 }}
               >
-                Live demo
-                <span className="arrow">↗</span>
+                Watch it route
+                <span className="arrow">→</span>
               </a>
             </div>
           </div>
@@ -174,7 +194,7 @@ function Hero() {
 
         <div className="hero-stats">
           <Stat k="∞" v="velocity ceiling" sub="bounded by horizontal scale, not headcount" accent="violet" />
-          <Stat k="MAB" v="reward shaping" sub="multi-armed bandits stacked on E2E SWU" accent="cyan" />
+          <Stat k="MAB" v="reward shaping" sub="every decision teaches the system — cost drops as it learns" accent="cyan" />
           <Stat k="$0" v="outside capital" sub="bootstrapped — not a VC pitch" accent="lime" />
           <Stat k="1" v="operator" sub="Adam — sole founder, Northern Colorado" accent="grey" />
         </div>
