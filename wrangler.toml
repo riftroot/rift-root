@@ -1,4 +1,4 @@
-name = "rift-bifrost-demo"
+name = "riftroot-demo"
 main = "worker/index.js"
 compatibility_date = "2025-04-01"
 account_id = "a62c1c7880b50ac345fc7c2135f6ae84"

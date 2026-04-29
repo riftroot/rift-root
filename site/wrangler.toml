@@ -1,4 +1,4 @@
-name = "rift-root-site"
+name = "riftroot-edge"
 main = "worker.js"
 compatibility_date = "2025-04-01"
 account_id = "a62c1c7880b50ac345fc7c2135f6ae84"
