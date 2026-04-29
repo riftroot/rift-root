@@ -1,0 +1,32 @@
+{
+  "targets": {
+    "qa": {
+      "url": "https://riftroot-qa.mock1ngbb.com",
+      "bundle_path": "/app.js",
+      "must_contain": [
+        "Compositor economics",
+        "Erebus Edge",
+        "Built for the network"
+      ],
+      "must_not_contain": [
+        "TODO",
+        "DEBUG_ONLY"
+      ],
+      "build_cmd": "bash site-qa/build.sh",
+      "local_bundle_path": "site-qa/public/app.js"
+    },
+    "prod": {
+      "url": "https://riftroot.com",
+      "bundle_path": "/app.js",
+      "must_contain": [
+        "Erebus Edge",
+        "Adam"
+      ],
+      "must_not_contain": [
+        "riftroot-qa.mock1ngbb.com"
+      ],
+      "build_cmd": "bash site/build.sh",
+      "local_bundle_path": "site/public/app.js"
+    }
+  }
+}

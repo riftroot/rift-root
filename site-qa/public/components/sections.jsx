@@ -1029,7 +1029,7 @@ function BeyondGen() {
 
         <div className="beyond-wrap">
           <h2 className="display beyond-title">
-            Erebus is not <em>generation</em>.<br/>
+            Erebus Edge is not <em>generation</em>.<br/>
             It is the <em className="cyan">execution loop</em> around generation.
           </h2>
 
