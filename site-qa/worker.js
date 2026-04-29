@@ -3,18 +3,49 @@
 // No secrets. No auth. The Turnstile gate is purely client-side (see
 // public/index.html). The worker just serves files, sets sensible cache
 // headers, and stamps a deploy version.
+//
+// Cache strategy (post-Vite-hashed-filenames):
+//   /app-[hash].js  → public, max-age=31536000, immutable    (content-hash in name = safe to pin)
+//   /                → public, max-age=3600, stale-while-revalidate=86400
+//   *.html          → public, max-age=3600, stale-while-revalidate=86400
+//   other static    → public, max-age=300, s-maxage=86400, swr=604800   (legacy CSS/SVG/etc.)
+//
+// HTML responses also carry a Link: rel=preload header for the hashed
+// app bundle and the React CDN scripts. This is the safer fallback for
+// "103 Early Hints" — Workers does support emitting a real 103 status,
+// but it requires the request reach the worker first (a measurable
+// fraction of the Time-to-103 win disappears at our edge), and most
+// browsers honor `Link: rel=preload` on the 200 nearly as well. See
+// preflight-config + commit message for full rationale.
 
 // Appends ?v=<version> to a same-origin attribute on matching elements.
-// Skips absolute URLs (CDN scripts already have their own version pins).
+// Skips absolute URLs (CDN scripts already have their own version pins)
+// AND skips already-hashed app-*.js (content hash already busts cache).
 class VersionTag {
   constructor(version, attr) { this.v = version; this.attr = attr; }
   element(el) {
     const u = el.getAttribute(this.attr);
-    if (!u || /^(https?:|data:|\/\/|#)/i.test(u)) return;
+    if (!u) return;
+    if (/^(https?:|data:|\/\/|#)/i.test(u)) return;
+    // Skip hashed app bundles — the [hash] in the filename is already the
+    // cache-bust token. Adding ?v= would defeat the immutable cache.
+    if (/\/app-[A-Za-z0-9_-]+\.js$/.test(u)) return;
     const sep = u.includes("?") ? "&" : "?";
     el.setAttribute(this.attr, u + sep + "v=" + this.v);
   }
 }
+
+// Capture the hashed app.js path from the HTML so we can set a precise
+// Link: rel=preload header on the response. The HTMLRewriter runs as a
+// stream, but because we transform-then-return we can hook the script
+// tag, store the hashed path on a closure-shared object, and append
+// the Link header to a SECOND copy of the HTML body. Simpler: do the
+// preload Link statically — we know the hash via a regex on the body.
+// But scanning the body twice is cheap and avoids state coupling.
+
+const REACT_VERSION = "18.3.1";
+const REACT_PRELOAD = `<https://unpkg.com/react@${REACT_VERSION}/umd/react.production.min.js>; rel=preload; as=script; crossorigin`;
+const REACT_DOM_PRELOAD = `<https://unpkg.com/react-dom@${REACT_VERSION}/umd/react-dom.production.min.js>; rel=preload; as=script; crossorigin`;
 
 export default {
   async fetch(request, env) {
@@ -69,13 +100,33 @@ export default {
     const ct = headers.get("Content-Type") || "";
 
     if (ct.startsWith("text/html")) {
-      // HTML never sticks. Rewrite same-origin script/link srcs to carry
-      // ?v=<version> so a deploy invalidates browser-cached JS/CSS for
-      // free without any client-side trickery.
-      headers.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-      headers.set("Pragma", "no-cache");
-      headers.set("Expires", "0");
+      // HTML never sticks for the document itself, but allow a short
+      // stale-while-revalidate window so navigation back-forward feels
+      // instant. The hashed app bundle invalidates by name, so HTML can
+      // be slightly looser than the previous "no-store everywhere".
+      headers.set("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+      headers.delete("Pragma");
+      headers.delete("Expires");
       headers.set("X-App-Version", version);
+
+      // Build a Link: rel=preload header for the hashed app bundle +
+      // React CDN. APP_BUNDLE is stamped at deploy time (scripts/deploy-qa.sh
+      // discovers the hashed filename from disk and passes it via --var).
+      // Fallback: scan the response body for the /app-*.js reference.
+      const linkValues = [REACT_PRELOAD, REACT_DOM_PRELOAD];
+      let appBundle = env.APP_BUNDLE || "";
+      if (!appBundle) {
+        try {
+          const bodyText = await res.clone().text();
+          const m = bodyText.match(/\/app-[A-Za-z0-9_-]+\.js/);
+          if (m) appBundle = m[0].slice(1);
+        } catch {}
+      }
+      if (appBundle) {
+        linkValues.unshift(`</${appBundle}>; rel=preload; as=script`);
+      }
+      headers.set("Link", linkValues.join(", "));
+
       const rewriter = new HTMLRewriter()
         .on('script[src]', new VersionTag(version, "src"))
         .on('link[rel="stylesheet"][href]', new VersionTag(version, "href"))
@@ -83,9 +134,16 @@ export default {
       return rewriter.transform(new Response(res.body, { status: res.status, statusText: res.statusText, headers }));
     }
 
-    // Static assets: short browser TTL + long edge TTL with SWR. The HTML
-    // versioning above means even cached browsers fetch fresh URLs after
-    // a deploy; this just keeps repeat visits within a session fast.
+    // Hashed app bundle: pin for a year. Filename changes on every build
+    // (vite content hash), so this is safe and gets us repeat-visit FCP
+    // wins from disk cache hits with zero conditional GETs.
+    if (/^\/app-[A-Za-z0-9_-]+\.js$/.test(url.pathname)) {
+      headers.set("Cache-Control", "public, max-age=31536000, immutable");
+      headers.set("X-App-Version", version);
+      return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+    }
+
+    // Other static assets: short browser TTL + long edge TTL with SWR.
     const isStatic = /\.(css|js|svg|png|jpg|jpeg|webp|woff2?|ttf|otf)$/i.test(url.pathname);
     if (isStatic) {
       headers.set("Cache-Control", "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800");

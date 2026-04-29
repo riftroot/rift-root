@@ -13,6 +13,8 @@ function LogoGlyph({ size = 28 }) {
       alt="rift root"
       width={size}
       height={size}
+      decoding="async"
+      fetchpriority="high"
       style={{ height: size, width: size, display: 'block', objectFit: 'contain' }}
       className="nav-logo-img"
     />
