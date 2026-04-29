@@ -15,6 +15,7 @@
   }
 
   // Intercept unmodified clicks on same-origin <a href="/..."> tags
+  // Skip hash-only links (e.g. href="#demo") — let the browser scroll natively.
   document.addEventListener('click', function (e) {
     if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const a = e.target.closest('a[href]');
@@ -22,6 +23,8 @@
     const url = new URL(a.href, location.origin);
     if (url.origin !== location.origin) return;
     if (a.target && a.target !== '_self') return;
+    // If only the hash differs (same path), let native anchor scroll handle it.
+    if (url.pathname === location.pathname && url.search === location.search && url.hash) return;
     e.preventDefault();
     navigate(url.pathname + url.search + url.hash);
   });

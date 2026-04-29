@@ -11,64 +11,52 @@ function SectionHead({ num, name, meta }) {
 }
 
 /* ==============================
-   THESIS — horizontal scale + agentic-first
+   THESIS — cost-optimized · model-agnostic · agentic-first
    ============================== */
 function Thesis() {
   return (
     <section id="thesis" className="section section-thesis">
       <div className="container">
-        <SectionHead num="01" name="The thesis" meta="HORIZONTAL SCALE · AGENTIC-FIRST" />
-
+        <SectionHead num="01" name="The thesis" meta="COST · MODEL-AGNOSTIC · AGENTIC-FIRST" />
 
         <div className="thesis-hero">
           <h2 className="display thesis-title">
-            Velocity is unlocked by <em className="cyan">horizontal scale</em>,<br/>
-            shaped by an <em>agentic-first</em> spine.
+            Three commitments.<br/>
+            Every routing decision<br/>
+            <em className="cyan">follows from them.</em>
           </h2>
           <p className="thesis-lede">
-            Big firms throw headcount at the problem. Rift Root deploys stateless workers,
-            edge runtimes, and ephemeral containers — Fly.io placement, Cloudflare workers,
-            sandboxed execution — and lets the agentic spine do the coordination work that
-            headcount was covering.
+            Cost-model-agnostic: you pick your infrastructure, the MAB stack routes to it.
+            Agentic-first: decisions are units of work, not prompts.
+            Data compounds: every dispatch teaches the system. Section 02 is what all three look like assembled.
           </p>
         </div>
 
         <ol className="thesis-stack">
-          <StackStep idx={0} n="01" tag="INGEST" color="cyan"
+          <StackStep idx={0} n="01" tag="COST-OPTIMIZED" color="cyan"
             lines={[
-              "Plan or spec enters. Thin-sliced into tasks with explicit schema:",
-              "relationships, priorities, blockers. No ambiguity reaches the executor."
-            ]} />
-          <StackStep idx={1} n="02" tag="STORE" color="violet"
-            lines={[
-              "Agentic-first task store. Not a ticketing tool.",
-              "Self-healing. HITL escalation trends toward zero."
-            ]} />
-          <StackStep idx={2} n="03" tag="ROUTE" color="lime"
-            lines={[
-              "MAB selects model × prompt path per task type.",
-              "Cheap-tier first. Winners reinforce. Losers prune."
+              "Cheap-tier inference first. MAB rewards propagate from E2E SWU.",
+              "Winners reinforce. Losers prune. Cost floor drops as the bandit learns."
             ]}
             metric={{ label: 'cheap-tier first-pass · last 1,000 tasks', value: 94, suffix: '%' }} />
-          <StackStep idx={3} n="04" tag="EXECUTE" color="cyan"
+          <StackStep idx={1} n="02" tag="MODEL-AGNOSTIC" color="violet"
             lines={[
-              "Stateless workers. Edge runtimes. Sandboxed containers.",
-              "Scale-to-zero on idle. Scale-to-thousands on demand.",
-              "No warm-up cost. No idle billing."
+              "No vendor lock. Each model is an arm — your infrastructure, routed.",
+              "Tomorrow's model plugs in without touching routing logic."
             ]} />
-          <StackStep idx={4} n="05" tag="CACHE" color="violet"
+          <StackStep idx={2} n="03" tag="AGENTIC-FIRST" color="lime"
             lines={[
-              "Right-sized context. No bloat. No rot.",
-              "Nothing computed twice. Feeds back into ingest so the system remembers."
+              "Not bolted onto a HITL workflow. Built for operators who set direction,",
+              "not approvers who review every output. HITL escalation trends toward zero."
             ]} />
         </ol>
 
         <div className="thesis-callout">
           <span className="chip lime">AGENTIC-FIRST</span>
           <p className="thesis-callout-body display">
-            The whole project is agentic-first — <em>no tacking on solutions
-            geared toward micromanaged HITL</em>. The operator is freed to make
-            decisions that matter and define the vision.
+            The whole stack is agentic-first — <em>no tacking on solutions
+            geared toward micromanaged HITL</em>. The operator defines the vision.
+            The mesh executes it.
           </p>
         </div>
 
@@ -265,9 +253,8 @@ function XDrivenTable() {
       </div>
 
       <p className="xdriven-foot">
-        The bandit tries every approach for which the inputs supply enough signal.
         No approach is privileged. Convergence — not preference — decides what gets
-        committed for a given task class.
+        committed. The demo shows that selection happening in real time.
       </p>
     </div>
   );
@@ -318,48 +305,52 @@ function Erebus() {
   return (
     <section id="erebus" className="section section-erebus">
       <div className="container">
-        <SectionHead num="02" name="Project · Codename" meta="EREBUS EDGE / IN DEVELOPMENT" />
+        <SectionHead num="02" name="Project · Codename" meta="ROUTING · REWARDING · LEARNING" />
 
         <div className="erebus-hero">
           <div className="erebus-hero-text">
             <div className="erebus-tag"><span className="chip lime">ACTIVE PROJECT</span></div>
             <h2 className="display erebus-title">
               <em>Erebus Edge.</em><br/>
-              A self-tuning fabric<br/>
-              for software work.
+              The execution loop<br/>
+              around generation.
             </h2>
             <p className="erebus-lede">
-              Stacked multi-armed bandit systems reward against total
-              end-to-end SWU. Each task type and model is trained on prompt
-              optimization, batch queueing, layered caches, compositors, and
-              x-driven approaches — all tuned and reinforced for quality,
-              self-healing, and capability expansion.
+              The three commitments from section 01 assembled: stacked multi-armed bandits
+              reward every decision against total end-to-end SWU — routing selection, prompt path,
+              batch queue, cache hit, self-heal retry. Each decision teaches the next.{' '}
+              <a href="#demo" className="hl-cyan"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.hash = 'demo';
+                }}>
+                Watch the compositor route a real run in real time
+              </a>
+              {' '}— every stage in that replay corresponds to a layer in section 03.
             </p>
           </div>
           <ErebusDiagram />
         </div>
 
-        <div className="erebus-rule" />
-
         <div className="erebus-grid">
           {[
             { n: "α", color: "violet", title: "Reward Shaping",
-              body: "Stacked MABs train on E2E SWU. Every task type, every model, every prompt path competes — the winners get reinforced, the losers get pruned.",
+              body: "Stacked MABs train on E2E SWU. Every model, every prompt path competes — winners reinforce, losers prune. Cost floor drops as the bandit learns.",
               tags: ["MAB", "E2E SWU", "prompt-opt"] },
             { n: "β", color: "cyan", title: "Cache Topology",
-              body: "Cache-in-model, local cache, queue cache. Batch-queued API calls with deduped fingerprints. The right answer never gets computed twice.",
+              body: "Cache-in-model, local cache, queue cache. Batch-queued API calls with deduped fingerprints. The right answer never computed twice.",
               tags: ["cache-in-model", "local", "batch-queue"] },
             { n: "γ", color: "lime", title: "Compositor Bandits",
-              body: "X-driven work flows through compositor bandits that pick the best driven approach for each task class — and run shadow operations to explore variants before committing.",
+              body: "X-driven work flows through compositor bandits that select the best approach for each task class — shadow operations explore variants before committing.",
               tags: ["compositors", "x-driven", "shadow-ops"] },
             { n: "δ", color: "cyan", title: "Sandbox Validation",
               body: "Every output runs through an isolated sandbox before promotion. Self-healing kicks in on failure — re-route, re-prompt, re-decompose.",
               tags: ["sandbox", "self-healing", "isolated"] },
             { n: "ε", color: "violet", title: "Horizontal Scale",
-              body: "Cloud-native serverless workers, edge runtimes, ephemeral containers. Scale-to-zero on idle, scale to thousands on demand.",
+              body: "Stateless workers, edge runtimes, ephemeral containers. Scale-to-zero on idle, scale to thousands on demand.",
               tags: ["serverless", "edge", "∞-scale"] },
             { n: "ζ", color: "lime", title: "Model-Agnostic",
-              body: "No vendor lock. The bandit chooses what's cheapest-per-quality this minute. Tomorrow's model plugs in as a new arm.",
+              body: "No vendor lock. The bandit selects cheapest-per-quality this minute. Tomorrow's model plugs in as a new arm.",
               tags: ["multi-vendor", "cost-opt", "pluggable"] }
           ].map((p, i) => <Pillar key={p.title} idx={i} {...p} />)}
         </div>
@@ -367,10 +358,11 @@ function Erebus() {
         <div className="erebus-callout card">
           <span className="corner tl" /><span className="corner tr" />
           <span className="corner bl" /><span className="corner br" />
-          <div className="callout-label"><span className="chip violet">WHY IT MATTERS</span></div>
+          <div className="callout-label"><span className="chip violet">WHAT THE DEMO SHOWS</span></div>
           <p className="callout-body display">
             One operator running Erebus Edge ships work that <em className="cyan">looks like</em> a forty-person engineering org —
             because the system, not the headcount, is doing the composition.
+            Section 03 explains why generation alone doesn&apos;t get you there.
           </p>
         </div>
       </div>
@@ -488,50 +480,44 @@ function ErebusDiagram() {
 }
 
 /* ==============================
-   BEYOND GENERATION — Erebus vs vibe coding / RAG / CAG
+   BEYOND GENERATION — posture: not academic, not research, not VC
    ============================== */
 function BeyondGen() {
   return (
     <section id="beyond" className="section section-beyond">
       <div className="container">
-        <SectionHead num="03" name="Beyond generation" meta="NOT VIBE CODING · NOT RAG · INFRASTRUCTURE" />
+        <SectionHead num="03" name="Beyond generation" meta="NOT RESEARCH · NOT TOOLING · OPERATING INFRASTRUCTURE" />
 
         <div className="beyond-wrap">
           <h2 className="display beyond-title">
-            Erebus is not <em>generation</em>.<br/>
-            It is the <em className="cyan">execution loop</em> around generation.
+            Generation is one stage.<br/>
+            The <em className="cyan">loop around it</em><br/>
+            is where velocity lives.
           </h2>
 
           <div className="beyond-cols">
             <article className="beyond-col">
-              <span className="chip violet">01 / WHY GENERATION ALONE ISN&apos;T ENOUGH</span>
+              <span className="chip violet">01 / NOT ACADEMIC, NOT RESEARCH</span>
               <p>
-                RAG and CAG solve retrieval and context management. They make
-                generation better-informed. They do not solve orchestration, cost
-                optimization, failure recovery, or cross-task learning. A system
-                that generates well but routes naively, retries dumbly, and forgets
-                everything between runs is still expensive and fragile.
+                No paper. No grant cycle. The system ships work today — real workloads,
+                real failure modes, real reward signal. The demo is not a prototype
+                walkthrough. It is a replay of a production run.
               </p>
             </article>
             <article className="beyond-col">
-              <span className="chip cyan">02 / WHAT THE MAB STACK ADDS</span>
+              <span className="chip cyan">02 / NOT RAG, NOT VIBE CODING</span>
               <p>
-                The bandit is not a smarter prompt router. It is a learning system
-                that accumulates reward signal across every task class, every model
-                arm, every cost tier — and uses that history to make better dispatch
-                decisions over time. RAG improves what the model knows. The MAB
-                improves which model you ask and what you pay for the answer. Those
-                operate at different layers and compound differently.
+                RAG improves what the model knows. The MAB stack improves which model
+                you ask, what you pay, and what the system remembers about that choice.
+                Different layers. Different compounding curve. The demo shows which stage is which.
               </p>
             </article>
             <article className="beyond-col">
-              <span className="chip lime">03 / SELF-HEALING + SWU IN PRACTICE</span>
+              <span className="chip lime">03 / NOT SEEKING VC</span>
               <p>
-                Vibe coding produces an output. Erebus produces a validated, deployed
-                artifact with a logged reward signal and a record of what failed and
-                why. The system is not done when code is generated — it is done when
-                the output is verified in production and the learning is written
-                back. That loop is what makes it infrastructure rather than tooling.
+                Bootstrapped by design — cash dilutes, resources compound. The compounding
+                asset is the MAB data: production-hardened evidence of what works, sliced
+                by task type, model, and x-driven approach. Section 04 explains who owns it.
               </p>
             </article>
           </div>

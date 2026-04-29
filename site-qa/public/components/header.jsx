@@ -13,6 +13,8 @@ function LogoGlyph({ size = 28 }) {
       alt="rift root"
       width={size}
       height={size}
+      decoding="async"
+      fetchpriority="high"
       style={{ height: size, width: size, display: 'block', objectFit: 'contain' }}
       className="nav-logo-img"
     />
@@ -146,10 +148,10 @@ function Hero() {
 
           <div className="hero-side">
             <p className="hero-lede">
-              Rift Root LLC is operating infrastructure for a one-person systems shop —
+              Erebus Edge is operating infrastructure for a one-person systems shop —
               a cost-optimized, model-agnostic execution mesh built
-              <span className="hl-cyan"> agentic-first</span>, so the operator stays
-              at the level where humans matter: decisions, taste, and direction.
+              <span className="hl-cyan"> agentic-first</span> by Rift Root LLC, so the
+              operator stays at the level where humans matter: decisions, taste, and direction.
             </p>
 
             <div className="hero-actions">

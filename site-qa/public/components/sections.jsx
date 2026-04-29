@@ -4,7 +4,7 @@ function SectionHead({ num, name, meta }) {
   return (
     <header className="section-head">
       <span className="num">{num} /</span>
-      <span className="name">{name}</span>
+      <h2 className="name">{name}</h2>
       <span className="meta">{meta}</span>
     </header>
   );
@@ -1029,7 +1029,7 @@ function BeyondGen() {
 
         <div className="beyond-wrap">
           <h2 className="display beyond-title">
-            Erebus is not <em>generation</em>.<br/>
+            Erebus Edge is not <em>generation</em>.<br/>
             It is the <em className="cyan">execution loop</em> around generation.
           </h2>
 
