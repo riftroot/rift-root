@@ -705,9 +705,9 @@ const SURFACE_CATS = [
     label: 'Task Lifecycle & Execution',
     count: 39,
     samples: [
-      { name: 'Create task',          method: 'POST',    path: '/v1/sluagh/tasks' },
+      { name: 'Create task',          method: 'POST',    path: '/v1/tasks' },
       { name: 'Worker poll for work', method: 'POST',    path: '/v1/worker/poll' },
-      { name: 'Allocate microVM',     method: 'POST',    path: '/v1/dispatch/sprite' },
+      { name: 'Allocate microVM',     method: 'POST',    path: '/v1/dispatch/microvm' },
     ],
   },
   {
@@ -715,7 +715,7 @@ const SURFACE_CATS = [
     label: 'Learning & Intelligence',
     count: 36,
     samples: [
-      { name: 'Chat endpoint (Void-Vein)',  method: 'POST',  path: '/v1/llm/chat' },
+      { name: 'Chat endpoint',              method: 'POST',  path: '/v1/llm/chat' },
       { name: 'Bandit state snapshot',      method: 'POST',  path: '/v1/admin/bandit/status' },
       { name: 'Embedding-based query',      method: 'POST',  path: '/v1/docs/semantic-search' },
     ],
@@ -725,8 +725,8 @@ const SURFACE_CATS = [
     label: 'Event Sourcing & Observability',
     count: 24,
     samples: [
-      { name: 'Event ingest (Annals-of-Ankou)', method: 'POST',   path: '/v1/events' },
-      { name: 'Reward/cost ledger (Doom-Dealer)',method: 'DO',     path: 'D1 bifrost-db' },
+      { name: 'Event ingest',                   method: 'POST',   path: '/v1/events' },
+      { name: 'Reward/cost ledger',             method: 'DO',     path: 'D1 (primary database)' },
       { name: 'Drift-detection cron',            method: 'cron',   path: '0 */6 * * *' },
     ],
   },
