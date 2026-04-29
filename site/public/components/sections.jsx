@@ -820,12 +820,12 @@ function Surface() {
           <span className="dot" aria-hidden="true" />
           Full inventory in repo ·{' '}
           <a
-            href="https://github.com/riftroot"
+            href="https://github.com/riftroot/erebus-edge/blob/main/SURFACE.md"
             className="surface-foot-link"
             target="_blank"
             rel="noopener noreferrer"
           >
-            github.com/riftroot
+            erebus-edge/SURFACE.md
           </a>
         </p>
       </div>
@@ -877,7 +877,8 @@ function Demo() {
             signal demands it — Opus never fires when Gemini Flash or a local 7B will do.
             The numbers below come from a representative 5-task replay: a real event stream
             routed live through the compositor, logged to{' '}
-            <code className="demo-mono">events.json</code>.
+            <code className="demo-mono">events-sample.json</code>.{' '}
+            SWU = a task that completes end-to-end on first attempt at the cheapest tier the router selected — no retries, no escalations, no human intervention.
           </p>
         </div>
 
@@ -1004,13 +1005,13 @@ function Demo() {
           <span className="mono-label">Full event replay in repo</span>
           <span className="demo-footer-sep">·</span>
           <a
-            href="https://github.com/riftroot"
+            href="https://github.com/riftroot/erebus-edge/blob/main/events-sample.json"
             className="demo-footer-link"
             target="_blank"
             rel="noopener noreferrer"
-          >github.com/riftroot</a>
+          >erebus-edge</a>
           <span className="demo-footer-sep">·</span>
-          <code className="demo-footer-path">public/events.json</code>
+          <code className="demo-footer-path">events-sample.json</code>
         </div>
 
       </div>
