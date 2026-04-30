@@ -52,6 +52,21 @@ export default {
     const url = new URL(request.url);
     const version = env.VERSION || "dev";
 
+    // 301 any extension-less non-root path to /. The site is a single
+    // page; URLs like /erebus, /surface, /demo are not real routes — only
+    // section anchors (#erebus, #surface) on the home page. Without this,
+    // not_found_handling="single-page-application" silently serves the
+    // SPA shell on any path, leaving /erebus visible as if it were valid.
+    if (
+      url.pathname !== "/" &&
+      !/\.[a-z0-9]+$/i.test(url.pathname) &&
+      url.pathname !== "/healthz" &&
+      url.pathname !== "/_bust" &&
+      url.pathname !== "/api/version"
+    ) {
+      return Response.redirect(url.origin + "/" + url.search, 301);
+    }
+
     if (url.pathname === "/healthz") {
       return new Response("ok", {
         headers: { "Content-Type": "text/plain", "Cache-Control": "no-store" }
