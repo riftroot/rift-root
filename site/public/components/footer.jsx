@@ -26,7 +26,7 @@ function Footer() {
 
         <nav className="site-footer-links" aria-label="Footer links">
           <a
-            href="https://github.com/riftroot"
+            href="https://github.com/riftroot/erebus-edge"
             className="site-footer-link"
             target="_blank"
             rel="noopener"
