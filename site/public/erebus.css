@@ -450,7 +450,6 @@
 /* ---- Hostile network deep dive ---- */
 .ep-deep {
   padding: clamp(56px, 8vw, 96px) 0;
-  border-bottom: 1px solid var(--line);
 }
 
 .ep-deep-grid {
