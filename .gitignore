@@ -6,3 +6,7 @@ node_modules/
 .cache/
 .vscode/
 .idea/
+.scratch/
+.claude/.riftroot-prod-thaw
+.claude/scheduled_tasks.lock
+.claude/worktrees/
