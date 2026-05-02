@@ -1,7 +1,6 @@
 // rift-root-site · static assets only
 //
-// No secrets. No auth. The Turnstile gate is purely client-side (see
-// public/index.html). The worker just serves files, sets sensible cache
+// No secrets. No auth. The worker serves files, sets sensible cache
 // headers, and stamps a deploy version.
 //
 // Cache strategy (post-Vite-hashed-filenames):
