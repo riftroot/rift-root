@@ -1,0 +1,38 @@
+# riftroot.com — no forms, no user data, nothing to protect.
+# Open by default. Explicit entries below override CF managed-robots blocks.
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Google-CloudVertexBot
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: BingPreview
+Allow: /
+
+User-agent: adidxbot
+Allow: /
+
+User-agent: MicrosoftPreview
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Amzn-SearchBot
+Allow: /
+
+User-agent: *
+Allow: /
