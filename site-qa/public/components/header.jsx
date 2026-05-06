@@ -3,13 +3,12 @@ const { useState, useEffect } = React;
 
 /* ==============================
    LOGO MARK — small wordmark for nav and footer
-   Uses the tinted SVG (light plaque + dark wordmark + violet dot).
-   Replaces all prior abstract glyphs.
+   Canonical neon-violet variant (rift-root-logo.svg).
    ============================== */
 function LogoGlyph({ size = 28 }) {
   return (
     <img
-      src="assets/riftroot-logo-tinted.svg"
+      src="assets/rift-root-logo.svg"
       alt="rift root"
       width={size}
       height={size}
