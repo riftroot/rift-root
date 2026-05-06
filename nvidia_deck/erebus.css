@@ -1,0 +1,274 @@
+/* @theme erebus */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+:root {
+  --color-bg:       #0d0d0d;
+  --color-surface:  #141414;
+  --color-border:   rgba(255,255,255,0.08);
+  --color-text:     #e8e4dc;
+  --color-muted:    #7a7672;
+  --color-faint:    #3a3836;
+  --color-purple:   #9b59d0;
+  --color-cyan:     #3ecfcf;
+  --color-lime:     #a3c940;
+  --color-nvidia:   #76b900;
+  --font-display:   'Cormorant Garamond', Georgia, serif;
+  --font-mono:      'JetBrains Mono', 'Courier New', monospace;
+}
+
+section {
+  background:   var(--color-bg);
+  color:        var(--color-text);
+  font-family:  var(--font-mono);
+  font-size:    15px;
+  line-height:  1.6;
+  padding:      52px 64px 44px;
+  width:        1280px;
+  height:       720px;
+  box-sizing:   border-box;
+  display:      flex;
+  flex-direction: column;
+  justify-content: center;
+  position:     relative;
+  overflow:     hidden;
+}
+
+section::after {
+  content:      attr(data-marpit-pagination) ' / ' attr(data-marpit-pagination-total);
+  position:     absolute;
+  bottom:       20px;
+  right:        64px;
+  font-family:  var(--font-mono);
+  font-size:    11px;
+  color:        var(--color-muted);
+  letter-spacing: 0.1em;
+}
+
+section::before {
+  content:    '';
+  position:   absolute;
+  top:        0;
+  left:       0;
+  right:      0;
+  height:     2px;
+  background: linear-gradient(90deg, var(--color-purple) 0%, var(--color-cyan) 50%, transparent 100%);
+}
+
+h1 {
+  font-family:  var(--font-display);
+  font-size:    clamp(2.2rem, 5vw, 3.4rem);
+  font-weight:  600;
+  line-height:  1.1;
+  color:        var(--color-text);
+  margin:       0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-family:  var(--font-display);
+  font-size:    1.9rem;
+  font-weight:  600;
+  line-height:  1.15;
+  color:        var(--color-text);
+  margin:       0 0 1rem;
+}
+
+h3 {
+  font-family:  var(--font-mono);
+  font-size:    0.7rem;
+  font-weight:  500;
+  color:        var(--color-purple);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin:       0 0 0.4rem;
+}
+
+p {
+  font-size:    14px;
+  line-height:  1.7;
+  color:        var(--color-text);
+  margin:       0 0 0.75rem;
+  max-width:    72ch;
+}
+
+strong {
+  color:        var(--color-text);
+  font-weight:  700;
+}
+
+em {
+  color:        var(--color-cyan);
+  font-style:   normal;
+}
+
+ul, ol {
+  padding-left: 1.2em;
+  margin:       0 0 0.75rem;
+}
+
+li {
+  font-size:    13.5px;
+  line-height:  1.65;
+  color:        var(--color-text);
+  margin-bottom: 0.3rem;
+}
+
+li::marker {
+  color:        var(--color-purple);
+}
+
+code {
+  font-family:  var(--font-mono);
+  font-size:    0.82em;
+  color:        var(--color-cyan);
+  background:   rgba(62, 207, 207, 0.08);
+  padding:      0.1em 0.35em;
+  border-radius: 3px;
+}
+
+pre {
+  background:   var(--color-surface);
+  border:       1px solid var(--color-border);
+  border-left:  2px solid var(--color-purple);
+  border-radius: 4px;
+  padding:      1rem 1.2rem;
+  font-size:    12px;
+  line-height:  1.6;
+  overflow:     hidden;
+}
+
+pre code {
+  background:   none;
+  padding:      0;
+  color:        var(--color-text);
+}
+
+table {
+  width:        100%;
+  border-collapse: collapse;
+  font-size:    12.5px;
+  margin:       0.75rem 0;
+}
+
+th {
+  font-family:  var(--font-mono);
+  font-size:    10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:        var(--color-muted);
+  border-bottom: 1px solid var(--color-border);
+  padding:      0.4rem 0.75rem 0.4rem 0;
+  text-align:   left;
+  font-weight:  500;
+}
+
+td {
+  color:        var(--color-text);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding:      0.45rem 0.75rem 0.45rem 0;
+  vertical-align: top;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+blockquote {
+  border:       none;
+  border-left:  2px solid var(--color-lime);
+  background:   rgba(163, 201, 64, 0.05);
+  margin:       0.75rem 0;
+  padding:      0.6rem 1rem;
+  border-radius: 0 4px 4px 0;
+}
+
+blockquote p {
+  color:        var(--color-text);
+  font-size:    13.5px;
+  margin:       0;
+}
+
+hr {
+  border:       none;
+  border-top:   1px solid var(--color-border);
+  margin:       1rem 0;
+}
+
+section.title {
+  justify-content: flex-end;
+  padding-bottom:  72px;
+}
+
+section.title h1 {
+  font-size:    4rem;
+  font-weight:  700;
+  font-style:   italic;
+  margin-bottom: 0.3rem;
+}
+
+section.title h3 {
+  color:        var(--color-cyan);
+  margin-bottom: 0.75rem;
+}
+
+section.title p {
+  color:        var(--color-muted);
+  font-size:    12px;
+  max-width:    none;
+}
+
+section.nvidia::before {
+  background: linear-gradient(90deg, var(--color-nvidia) 0%, var(--color-cyan) 60%, transparent 100%);
+}
+
+section.nvidia em {
+  color: var(--color-nvidia);
+}
+
+section.nvidia li::marker {
+  color: var(--color-nvidia);
+}
+
+section.two-col table {
+  table-layout: fixed;
+}
+
+section.two-col table th,
+section.two-col table td {
+  border: none;
+  vertical-align: top;
+  padding: 0.3rem 1.5rem 0.3rem 0;
+}
+
+section.two-col table th {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+section.stats {
+  justify-content: center;
+}
+
+section.stats h1 {
+  font-size: 5rem;
+  color: var(--color-lime);
+  margin: 0;
+  line-height: 1;
+}
+
+.label {
+  font-family:  var(--font-mono);
+  font-size:    10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color:        var(--color-muted);
+}
+
+header, footer {
+  display: none;
+}
