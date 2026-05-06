@@ -141,6 +141,6 @@ These are logged outputs from `annals-of-ankou`, not projections. The replay win
 
 #### Adam · Rift Root LLC
 
-`mock1ng@pm.me` · `riftroot.com` · `github.com/riftroot`
+`adam@riftroot.com` · `riftroot.com` · `github.com/riftroot`
 
 Erebus Edge is ready to take NIM arms today.
