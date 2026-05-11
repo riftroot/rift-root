@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rift Root Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* Art direction: personal finance ops tool for a solo LLC dev → precise, dark-native, monospace data
+   Palette: near-black surfaces, teal accent (Rift Root brand continuity)
+   Typography: Geist (body) + Geist Mono (data/numbers)
+   Density: dense — this is a daily-use ops tool */
+
+:root {
+  --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+  --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+  --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+  --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+  --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+  --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+  --space-12: 3rem; --space-16: 4rem;
+  --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem; --radius-full: 9999px;
+  --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --font-body: 'Geist', 'Inter', sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+:root, [data-theme="light"] {
+  --color-bg: #f7f6f2; --color-surface: #f9f8f5; --color-surface-2: #fbfbf9;
+  --color-surface-offset: #f0ede8; --color-surface-dynamic: #e6e4df;
+  --color-divider: #dcd9d5; --color-border: #d4d1ca;
+  --color-text: #28251d; --color-text-muted: #7a7974; --color-text-faint: #bab9b4;
+  --color-text-inverse: #f9f8f4;
+  --color-primary: #01696f; --color-primary-hover: #0c4e54; --color-primary-active: #0f3638;
+  --color-primary-highlight: #cedcd8;
+  --color-success: #437a22; --color-success-highlight: #d4dfcc;
+  --color-warning: #964219; --color-warning-highlight: #ddcfc6;
+  --color-error: #a12c7b; --color-error-highlight: #e0ced7;
+  --color-gold: #d19900; --color-gold-highlight: #e9e0c6;
+  --color-blue: #006494; --color-blue-highlight: #c6d8e4;
+  --shadow-sm: 0 1px 2px oklch(0.2 0.01 80 / 0.06);
+  --shadow-md: 0 4px 12px oklch(0.2 0.01 80 / 0.08);
+  --shadow-lg: 0 12px 32px oklch(0.2 0.01 80 / 0.12);
+  --nav-bg: #f0ede8;
+}
+
+[data-theme="dark"] {
+  --color-bg: #111110; --color-surface: #171614; --color-surface-2: #1c1b19;
+  --color-surface-offset: #1d1c1a; --color-surface-dynamic: #2a2927;
+  --color-divider: #252422; --color-border: #333230;
+  --color-text: #cdccca; --color-text-muted: #797876; --color-text-faint: #5a5957;
+  --color-text-inverse: #111110;
+  --color-primary: #4f98a3; --color-primary-hover: #227f8b; --color-primary-active: #1a626b;
+  --color-primary-highlight: #1e3335;
+  --color-success: #6daa45; --color-success-highlight: #1e3020;
+  --color-warning: #bb653b; --color-warning-highlight: #382515;
+  --color-error: #d163a7; --color-error-highlight: #2e1626;
+  --color-gold: #e8af34; --color-gold-highlight: #2e2410;
+  --color-blue: #5591c7; --color-blue-highlight: #142032;
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
+  --shadow-md: 0 4px 12px oklch(0 0 0 / 0.4);
+  --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.5);
+  --nav-bg: #0e0d0c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-bg: #111110; --color-surface: #171614; --color-surface-2: #1c1b19;
+    --color-surface-offset: #1d1c1a; --color-surface-dynamic: #2a2927;
+    --color-divider: #252422; --color-border: #333230;
+    --color-text: #cdccca; --color-text-muted: #797876; --color-text-faint: #5a5957;
+    --color-text-inverse: #111110;
+    --color-primary: #4f98a3; --color-primary-hover: #227f8b; --color-primary-active: #1a626b;
+    --color-primary-highlight: #1e3335;
+    --color-success: #6daa45; --color-success-highlight: #1e3020;
+    --color-warning: #bb653b; --color-warning-highlight: #382515;
+    --color-error: #d163a7; --color-error-highlight: #2e1626;
+    --color-gold: #e8af34; --color-gold-highlight: #2e2410;
+    --color-blue: #5591c7; --color-blue-highlight: #142032;
+    --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
+    --shadow-md: 0 4px 12px oklch(0 0 0 / 0.4);
+    --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.5);
+    --nav-bg: #0e0d0c;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+body { min-height: 100dvh; font-family: var(--font-body); font-size: var(--text-base); color: var(--color-text); background: var(--color-bg); }
+button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
+input, select, textarea { font: inherit; color: inherit; }
+a, button, [role="button"], input, select { transition: color var(--transition-interactive), background var(--transition-interactive), border-color var(--transition-interactive), box-shadow var(--transition-interactive); }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: var(--radius-sm); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+/* Layout */
+.app { display: grid; grid-template-rows: auto 1fr; min-height: 100dvh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); background: var(--nav-bg); border-bottom: 1px solid var(--color-divider); position: sticky; top: 0; z-index: 100; }
+.topbar-left { display: flex; align-items: center; gap: var(--space-3); }
+.logo { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); font-weight: 600; color: var(--color-text); text-decoration: none; }
+.logo svg { color: var(--color-primary); }
+.topbar-right { display: flex; align-items: center; gap: var(--space-2); }
+.main { display: grid; grid-template-rows: auto 1fr; }
+
+/* Bottom nav mobile */
+.bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--nav-bg); border-top: 1px solid var(--color-divider); z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
+.bottom-nav-inner { display: flex; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: var(--space-2) var(--space-1); font-size: 10px; font-weight: 500; color: var(--color-text-muted); text-decoration: none; border: none; background: none; cursor: pointer; min-height: 56px; justify-content: center; letter-spacing: 0.02em; text-transform: uppercase; }
+.nav-item.active { color: var(--color-primary); }
+.nav-item i { width: 20px; height: 20px; }
+
+/* Desktop side nav */
+.desktop-layout { display: flex; flex: 1; overflow: hidden; }
+.sidebar { width: 220px; background: var(--nav-bg); border-right: 1px solid var(--color-divider); padding: var(--space-4) 0; flex-shrink: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+.sidebar-item { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); text-decoration: none; border: none; background: none; cursor: pointer; width: 100%; text-align: left; border-radius: 0; }
+.sidebar-item:hover { color: var(--color-text); background: var(--color-surface-offset); }
+.sidebar-item.active { color: var(--color-primary); background: var(--color-primary-highlight); }
+.sidebar-item i { width: 16px; height: 16px; flex-shrink: 0; }
+.sidebar-section { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-faint); padding: var(--space-4) var(--space-4) var(--space-1); }
+.content { flex: 1; overflow-y: auto; padding: var(--space-6) var(--space-6); }
+
+/* Cards & KPIs */
+.page-title { font-size: var(--text-xl); font-weight: 600; margin-bottom: var(--space-6); }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr)); gap: var(--space-3); margin-bottom: var(--space-6); }
+.kpi-card { background: var(--color-surface); border: 1px solid oklch(from var(--color-text) l c h / 0.08); border-radius: var(--radius-lg); padding: var(--space-4); }
+.kpi-label { font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-2); }
+.kpi-value { font-size: var(--text-lg); font-weight: 700; font-family: var(--font-mono); color: var(--color-text); }
+.kpi-sub { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-1); }
+.kpi-value.income { color: var(--color-success); }
+.kpi-value.expense { color: var(--color-error); }
+.kpi-value.neutral { color: var(--color-text); }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-size: var(--text-sm); font-weight: 500; cursor: pointer; border: none; min-height: 36px; }
+.btn-primary { background: var(--color-primary); color: var(--color-text-inverse); }
+.btn-primary:hover { background: var(--color-primary-hover); }
+.btn-ghost { background: transparent; color: var(--color-text-muted); border: 1px solid oklch(from var(--color-text) l c h / 0.12); }
+.btn-ghost:hover { background: var(--color-surface-offset); color: var(--color-text); }
+.btn-sm { padding: var(--space-1) var(--space-3); min-height: 28px; font-size: var(--text-xs); }
+.btn-icon { padding: var(--space-2); min-width: 36px; min-height: 36px; justify-content: center; border-radius: var(--radius-md); color: var(--color-text-muted); }
+.btn-icon:hover { background: var(--color-surface-offset); color: var(--color-text); }
+
+/* Transaction list */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+.section-title { font-size: var(--text-lg); font-weight: 600; }
+.filter-row { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-3); }
+.filter-chip { display: inline-flex; align-items: center; gap: var(--space-1); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 500; border: 1px solid oklch(from var(--color-text) l c h / 0.12); background: transparent; color: var(--color-text-muted); cursor: pointer; }
+.filter-chip.active { background: var(--color-primary-highlight); color: var(--color-primary); border-color: var(--color-primary); }
+.txn-list { display: flex; flex-direction: column; gap: var(--space-1); }
+.txn-card { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--color-surface); border: 1px solid oklch(from var(--color-text) l c h / 0.07); border-radius: var(--radius-md); cursor: pointer; }
+.txn-card:hover { background: var(--color-surface-2); }
+.txn-card.unreviewed { border-left: 2px solid var(--color-gold); }
+.txn-type-dot { width: 8px; height: 8px; border-radius: var(--radius-full); flex-shrink: 0; }
+.dot-income { background: var(--color-success); }
+.dot-expense { background: var(--color-error); }
+.dot-draw { background: var(--color-gold); }
+.dot-contribution { background: var(--color-blue); }
+.txn-main { min-width: 0; }
+.txn-counterparty { font-size: var(--text-sm); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txn-meta { font-size: var(--text-xs); color: var(--color-text-muted); display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; }
+.txn-amount { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 600; text-align: right; white-space: nowrap; }
+.txn-amount.pos { color: var(--color-success); }
+.txn-amount.neg { color: var(--color-error); }
+.txn-status { display: flex; align-items: center; }
+.badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px var(--space-2); border-radius: var(--radius-full); font-size: 11px; font-weight: 500; }
+.badge-pending { background: var(--color-gold-highlight); color: var(--color-gold); }
+.badge-reviewed { background: var(--color-success-highlight); color: var(--color-success); }
+.badge-cat { background: var(--color-primary-highlight); color: var(--color-primary); }
+
+/* Modal / drawer */
+.overlay { position: fixed; inset: 0; background: oklch(0 0 0 / 0.5); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
+.overlay.open { display: flex; }
+.drawer { background: var(--color-surface); border-radius: var(--radius-xl) var(--radius-xl) 0 0; width: 100%; max-width: 600px; max-height: 90dvh; overflow-y: auto; padding: var(--space-6); animation: slideUp 200ms cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.drawer-handle { width: 40px; height: 4px; background: var(--color-border); border-radius: var(--radius-full); margin: 0 auto var(--space-6); }
+.drawer-title { font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--space-4); }
+.form-group { margin-bottom: var(--space-4); }
+.form-label { display: block; font-size: var(--text-xs); font-weight: 500; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-2); }
+.form-input { width: 100%; padding: var(--space-2) var(--space-3); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--color-text); }
+.form-input:focus { outline: 2px solid var(--color-primary); border-color: transparent; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.drawer-actions { display: flex; gap: var(--space-3); margin-top: var(--space-6); }
+.drawer-actions .btn { flex: 1; justify-content: center; }
+
+/* Detail fields */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4); }
+.detail-field { background: var(--color-bg); border-radius: var(--radius-md); padding: var(--space-3); }
+.detail-field-label { font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-1); }
+.detail-field-value { font-size: var(--text-sm); font-weight: 500; font-family: var(--font-mono); }
+
+/* Categories page */
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: var(--space-3); }
+.cat-card { background: var(--color-surface); border: 1px solid oklch(from var(--color-text) l c h / 0.07); border-radius: var(--radius-lg); padding: var(--space-4); }
+.cat-name { font-size: var(--text-sm); font-weight: 600; margin-bottom: var(--space-1); }
+.cat-qb { font-size: var(--text-xs); color: var(--color-text-muted); font-family: var(--font-mono); margin-bottom: var(--space-3); }
+.cat-bar-track { height: 4px; background: var(--color-surface-offset); border-radius: var(--radius-full); overflow: hidden; margin-bottom: var(--space-3); }
+.cat-bar-fill { height: 100%; border-radius: var(--radius-full); background: var(--color-primary); transition: width 600ms cubic-bezier(0.16, 1, 0.3, 1); }
+.cat-stats { display: flex; justify-content: space-between; align-items: center; }
+.cat-total { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 600; }
+.cat-count { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+/* Export page */
+.export-box { background: var(--color-surface); border: 1px solid oklch(from var(--color-text) l c h / 0.07); border-radius: var(--radius-lg); padding: var(--space-6); max-width: 540px; }
+.export-title { font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--space-2); }
+.export-desc { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-6); line-height: 1.6; }
+.export-preview { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); font-family: var(--font-mono); font-size: 12px; color: var(--color-text-muted); white-space: pre; overflow-x: auto; margin-bottom: var(--space-4); }
+.export-meta { font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-3); }
+
+/* Review queue banner */
+.review-banner { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); background: var(--color-gold-highlight); border: 1px solid color-mix(in oklch, var(--color-gold) 30%, transparent); border-radius: var(--radius-lg); margin-bottom: var(--space-4); }
+.review-banner-text { font-size: var(--text-sm); color: var(--color-gold); font-weight: 500; }
+.review-banner-count { font-family: var(--font-mono); font-size: var(--text-xl); font-weight: 700; color: var(--color-gold); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .bottom-nav { display: block; }
+  .content { padding: var(--space-4); padding-bottom: calc(var(--space-16) + env(safe-area-inset-bottom)); }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .txn-card { grid-template-columns: auto 1fr auto; }
+  .txn-status { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+  .page-title { font-size: var(--text-lg); }
+}
+@media (min-width: 769px) {
+  .overlay { align-items: center; }
+  .drawer { border-radius: var(--radius-xl); max-height: 80dvh; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="#" class="logo" aria-label="Rift Root Ledger">
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2 L4 7 L4 17 L12 22 L20 17 L20 7 Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M8 12 L12 8 L16 12 L12 16 Z" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.2"/>
+          <line x1="12" y1="2" x2="12" y2="8" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="12" y1="16" x2="12" y2="22" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <span>Rift Root Ledger</span>
+      </a>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle dark mode">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="btn btn-sm btn-ghost" id="syncBtn" onclick="simulateSync()">
+        <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Sync
+      </button>
+    </div>
+  </header>
+
+  <!-- Desktop layout -->
+  <div class="desktop-layout">
+    <nav class="sidebar">
+      <div class="sidebar-section">Ledger</div>
+      <button class="sidebar-item active" onclick="navigate('dashboard')" id="nav-dashboard">
+        <i data-lucide="layout-dashboard"></i> Dashboard
+      </button>
+      <button class="sidebar-item" onclick="navigate('transactions')" id="nav-transactions">
+        <i data-lucide="list"></i> Transactions
+      </button>
+      <button class="sidebar-item" onclick="navigate('categories')" id="nav-categories">
+        <i data-lucide="tag"></i> Categories
+      </button>
+      <div class="sidebar-section" style="margin-top:var(--space-4)">Export</div>
+      <button class="sidebar-item" onclick="navigate('export')" id="nav-export">
+        <i data-lucide="download"></i> QB Export
+      </button>
+    </nav>
+
+    <main class="content" id="mainContent">
+      <!-- Content rendered by JS -->
+    </main>
+  </div>
+
+  <!-- Bottom nav (mobile) -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <div class="bottom-nav-inner">
+      <button class="nav-item active" onclick="navigate('dashboard')" id="bnav-dashboard">
+        <i data-lucide="layout-dashboard"></i> Home
+      </button>
+      <button class="nav-item" onclick="navigate('transactions')" id="bnav-transactions">
+        <i data-lucide="list"></i> Txns
+      </button>
+      <button class="nav-item" onclick="navigate('categories')" id="bnav-categories">
+        <i data-lucide="tag"></i> Cats
+      </button>
+      <button class="nav-item" onclick="navigate('export')" id="bnav-export">
+        <i data-lucide="download"></i> Export
+      </button>
+    </div>
+  </nav>
+</div>
+
+<!-- Transaction Drawer -->
+<div class="overlay" id="txnDrawer" onclick="closeDrawer(event)">
+  <div class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <div class="drawer-handle"></div>
+    <div id="drawerContent"></div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const QB_CATEGORIES = [
+  { id: 'consulting_income', name: 'Consulting Income', qb: 'Consulting Income', type: 'income' },
+  { id: 'software_revenue', name: 'Software License Revenue', qb: 'Software License Revenue', type: 'income' },
+  { id: 'software_subs', name: 'Software & Subscriptions', qb: 'Software & Subscriptions', type: 'expense' },
+  { id: 'professional_services', name: 'Professional Services', qb: 'Professional Services', type: 'expense' },
+  { id: 'home_office', name: 'Home Office', qb: 'Home Office', type: 'expense' },
+  { id: 'hardware', name: 'Equipment & Hardware', qb: 'Equipment & Hardware', type: 'expense' },
+  { id: 'owner_draw', name: 'Owner Draw', qb: 'Owner Draw', type: 'draw' },
+  { id: 'owner_contribution', name: 'Owner Contribution', qb: 'Owner Contribution', type: 'contribution' },
+  { id: 'uncategorized', name: 'Uncategorized', qb: '', type: 'expense' },
+];
+
+const TRANSACTIONS = [
+  { id: 'txn_001', created_at: '2026-04-28', posted_at: '2026-04-28', amount: 4200.00, counterparty: 'Acme Corp', description: 'SOW-001 Milestone 1 payment', category: 'consulting_income', type: 'income', invoice_ref: 'INV-001', reviewed: 1 },
+  { id: 'txn_002', created_at: '2026-04-27', posted_at: '2026-04-27', amount: -49.00, counterparty: 'Cloudflare', description: 'Workers Pro plan', category: 'software_subs', type: 'expense', invoice_ref: null, reviewed: 1 },
+  { id: 'txn_003', created_at: '2026-04-26', posted_at: '2026-04-26', amount: -22.00, counterparty: 'GitHub', description: 'Copilot Business', category: 'software_subs', type: 'expense', invoice_ref: null, reviewed: 1 },
+  { id: 'txn_004', created_at: '2026-04-25', posted_at: '2026-04-25', amount: -1500.00, counterparty: 'Rift Root LLC - Owner', description: 'Owner distribution Q1', category: 'owner_draw', type: 'draw', invoice_ref: null, reviewed: 1 },
+  { id: 'txn_005', created_at: '2026-04-24', posted_at: '2026-04-24', amount: 500.00, counterparty: 'Personal Account', description: 'Initial capital seed', category: 'owner_contribution', type: 'contribution', invoice_ref: null, reviewed: 1 },
+  { id: 'txn_006', created_at: '2026-04-23', posted_at: '2026-04-23', amount: -19.99, counterparty: 'Fly.io', description: 'Hobby plan - April', category: 'software_subs', type: 'expense', invoice_ref: null, reviewed: 0 },
+  { id: 'txn_007', created_at: '2026-04-22', posted_at: '2026-04-22', amount: -189.00, counterparty: 'B&H Photo', description: 'USB-C hub + cables', category: 'hardware', type: 'expense', invoice_ref: null, reviewed: 0 },
+  { id: 'txn_008', created_at: '2026-04-21', posted_at: '2026-04-21', amount: 2800.00, counterparty: 'Beta Client LLC', description: 'Retainer - May 2026', category: 'consulting_income', type: 'income', invoice_ref: 'INV-002', reviewed: 0 },
+  { id: 'txn_009', created_at: '2026-04-20', posted_at: '2026-04-20', amount: -12.00, counterparty: 'Anthropic', description: 'Claude API usage', category: 'software_subs', type: 'expense', invoice_ref: null, reviewed: 0 },
+  { id: 'txn_010', created_at: '2026-04-18', posted_at: '2026-04-18', amount: -850.00, counterparty: 'Fort Collins Apartments', description: 'Home office - April portion', category: 'home_office', type: 'expense', invoice_ref: null, reviewed: 1 },
+];
+
+let state = {
+  view: 'dashboard',
+  transactions: JSON.parse(JSON.stringify(TRANSACTIONS)),
+  filter: 'all',
+  drawerTxn: null,
+  lastSync: new Date().toISOString(),
+};
+
+// ── Navigation ──────────────────────────────────────────────────────────────
+function navigate(view) {
+  state.view = view;
+  document.querySelectorAll('.sidebar-item, .nav-item').forEach(el => el.classList.remove('active'));
+  const desk = document.getElementById('nav-' + view);
+  const mob = document.getElementById('bnav-' + view);
+  if (desk) desk.classList.add('active');
+  if (mob) mob.classList.add('active');
+  render();
+}
+
+// ── Formatters ──────────────────────────────────────────────────────────────
+function fmtAmt(n) {
+  return (n >= 0 ? '+' : '') + n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+function fmtAmtAbs(n) {
+  return Math.abs(n).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+function fmtDate(s) {
+  const d = new Date(s + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function fmtDateQB(s) {
+  const d = new Date(s + 'T12:00:00');
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return m + '/' + dd + '/' + d.getFullYear();
+}
+function getCat(id) { return QB_CATEGORIES.find(c => c.id === id) || QB_CATEGORIES.find(c => c.id === 'uncategorized'); }
+
+// ── Computed ──────────────────────────────────────────────────────────────
+function computeKPIs() {
+  const t = state.transactions;
+  const income = t.filter(x => x.amount > 0 && x.type === 'income').reduce((s, x) => s + x.amount, 0);
+  const expenses = t.filter(x => x.amount < 0 && x.type === 'expense').reduce((s, x) => s + Math.abs(x.amount), 0);
+  const draws = t.filter(x => x.type === 'draw').reduce((s, x) => s + Math.abs(x.amount), 0);
+  const contributions = t.filter(x => x.type === 'contribution').reduce((s, x) => s + x.amount, 0);
+  const pending = t.filter(x => !x.reviewed).length;
+  const profit = income - expenses;
+  return { income, expenses, draws, contributions, pending, profit };
+}
+
+function computeCategoryTotals() {
+  const map = {};
+  for (const cat of QB_CATEGORIES) map[cat.id] = { count: 0, total: 0 };
+  for (const t of state.transactions) {
+    if (map[t.category]) { map[t.category].count++; map[t.category].total += Math.abs(t.amount); }
+  }
+  return map;
+}
+
+// ── Views ──────────────────────────────────────────────────────────────────
+function renderDashboard() {
+  const k = computeKPIs();
+  const pending = state.transactions.filter(x => !x.reviewed);
+  const recent = [...state.transactions].sort((a,b) => b.posted_at.localeCompare(a.posted_at)).slice(0, 5);
+  return `
+    <h1 class="page-title">Dashboard</h1>
+    ${pending.length > 0 ? `
+    <div class="review-banner">
+      <div>
+        <div class="review-banner-text">Transactions need review</div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;">Tap to review and categorize</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--space-3)">
+        <div class="review-banner-count">${pending.length}</div>
+        <button class="btn btn-sm" style="background:var(--color-gold);color:#1a1000;" onclick="navigate('transactions');filterSet('pending')">Review</button>
+      </div>
+    </div>` : ''}
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Revenue (MTD)</div>
+        <div class="kpi-value income">${fmtAmtAbs(k.income)}</div>
+        <div class="kpi-sub">${state.transactions.filter(x=>x.type==='income').length} invoices</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Expenses (MTD)</div>
+        <div class="kpi-value expense">-${fmtAmtAbs(k.expenses)}</div>
+        <div class="kpi-sub">${state.transactions.filter(x=>x.type==='expense').length} items</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Net Profit</div>
+        <div class="kpi-value ${k.profit >= 0 ? 'income' : 'expense'}">${k.profit >= 0 ? '' : '-'}${fmtAmtAbs(k.profit)}</div>
+        <div class="kpi-sub">Cash basis</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Owner Draws</div>
+        <div class="kpi-value neutral">-${fmtAmtAbs(k.draws)}</div>
+        <div class="kpi-sub">+ ${fmtAmtAbs(k.contributions)} contributed</div>
+      </div>
+    </div>
+    <div class="section-header">
+      <div class="section-title">Recent Transactions</div>
+      <button class="btn btn-sm btn-ghost" onclick="navigate('transactions')">View all</button>
+    </div>
+    <div class="txn-list">${recent.map(renderTxnCard).join('')}</div>
+  `;
+}
+
+function renderTransactions() {
+  const f = state.filter;
+  let txns = [...state.transactions].sort((a,b) => b.posted_at.localeCompare(a.posted_at));
+  if (f === 'pending') txns = txns.filter(x => !x.reviewed);
+  if (f === 'income') txns = txns.filter(x => x.type === 'income');
+  if (f === 'expense') txns = txns.filter(x => x.type === 'expense');
+  if (f === 'draw') txns = txns.filter(x => x.type === 'draw' || x.type === 'contribution');
+  const pending = state.transactions.filter(x => !x.reviewed).length;
+  return `
+    <h1 class="page-title">Transactions</h1>
+    <div class="filter-row">
+      <button class="filter-chip ${f==='all'?'active':''}" onclick="filterSet('all')">All (${state.transactions.length})</button>
+      <button class="filter-chip ${f==='pending'?'active':''}" onclick="filterSet('pending')">Needs Review ${pending > 0 ? '('+pending+')' : ''}</button>
+      <button class="filter-chip ${f==='income'?'active':''}" onclick="filterSet('income')">Income</button>
+      <button class="filter-chip ${f==='expense'?'active':''}" onclick="filterSet('expense')">Expenses</button>
+      <button class="filter-chip ${f==='draw'?'active':''}" onclick="filterSet('draw')">Owner</button>
+    </div>
+    <div class="txn-list">${txns.length ? txns.map(renderTxnCard).join('') : '<div style="padding:var(--space-8);text-align:center;color:var(--color-text-muted);">No transactions match this filter</div>'}</div>
+  `;
+}
+
+function renderTxnCard(t) {
+  const cat = getCat(t.category);
+  const dotClass = { income: 'dot-income', expense: 'dot-expense', draw: 'dot-draw', contribution: 'dot-contribution' }[t.type] || 'dot-expense';
+  return `
+    <div class="txn-card ${!t.reviewed ? 'unreviewed' : ''}" onclick="openDrawer('${t.id}')" role="button" tabindex="0" aria-label="Transaction: ${t.counterparty}">
+      <div class="txn-type-dot ${dotClass}"></div>
+      <div class="txn-main">
+        <div class="txn-counterparty">${t.counterparty}</div>
+        <div class="txn-meta">
+          <span>${fmtDate(t.posted_at)}</span>
+          <span style="color:var(--color-divider)">·</span>
+          <span class="badge badge-cat">${cat.name}</span>
+          ${t.invoice_ref ? '<span class="badge" style="background:var(--color-blue-highlight);color:var(--color-blue);">' + t.invoice_ref + '</span>' : ''}
+        </div>
+      </div>
+      <div class="txn-amount ${t.amount >= 0 ? 'pos' : 'neg'}">${fmtAmt(t.amount)}</div>
+      <div class="txn-status">
+        ${!t.reviewed ? '<span class="badge badge-pending">Review</span>' : '<span class="badge badge-reviewed"><i data-lucide="check" style="width:10px;height:10px;"></i></span>'}
+      </div>
+    </div>
+  `;
+}
+
+function renderCategories() {
+  const totals = computeCategoryTotals();
+  const maxTotal = Math.max(...QB_CATEGORIES.map(c => totals[c.id]?.total || 0));
+  return `
+    <h1 class="page-title">Categories</h1>
+    <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-6);">These map 1:1 to QuickBooks category names. Change them here and your export updates automatically.</p>
+    <div class="cat-grid">
+      ${QB_CATEGORIES.filter(c => c.id !== 'uncategorized').map(cat => {
+        const d = totals[cat.id] || { count: 0, total: 0 };
+        const pct = maxTotal > 0 ? (d.total / maxTotal * 100) : 0;
+        const typeColors = { income: 'var(--color-success)', expense: 'var(--color-error)', draw: 'var(--color-gold)', contribution: 'var(--color-blue)' };
+        return `
+        <div class="cat-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-1)">
+            <div class="cat-name">${cat.name}</div>
+            <span class="badge" style="background:${typeColors[cat.type]}22;color:${typeColors[cat.type]};font-size:10px;">${cat.type}</span>
+          </div>
+          <div class="cat-qb">QB: "${cat.qb || '—'}"</div>
+          <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%;background:${typeColors[cat.type]};"></div></div>
+          <div class="cat-stats">
+            <div class="cat-total" style="color:${typeColors[cat.type]}">${fmtAmtAbs(d.total)}</div>
+            <div class="cat-count">${d.count} txn${d.count !== 1 ? 's' : ''}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderExport() {
+  const reviewed = state.transactions.filter(x => x.reviewed).sort((a,b) => a.posted_at.localeCompare(b.posted_at));
+  const pending = state.transactions.filter(x => !x.reviewed).length;
+  const csvLines = reviewed.map(t => {
+    const cat = getCat(t.category);
+    const desc = `${t.counterparty} - ${t.description}`.replace(/,/g, ';');
+    return `${fmtDateQB(t.posted_at)},${desc},${t.amount.toFixed(2)},${cat.qb}`;
+  });
+  const csv = ['Date,Description,Amount,Category', ...csvLines].join('
+');
+  const preview = csv.split('
+').slice(0, 6).join('
+') + (csvLines.length > 5 ? '
+...' : '');
+  return `
+    <h1 class="page-title">QuickBooks Export</h1>
+    <div style="display:grid;gap:var(--space-4)">
+      <div class="export-box">
+        <div class="export-title">Bank Transactions CSV</div>
+        <div class="export-desc">Reviewed transactions formatted for QuickBooks Online import. Upload via Banking > File Upload in QBO. Column order: Date, Description, Amount, Category.</div>
+        ${pending > 0 ? `<div style="padding:var(--space-3);background:var(--color-gold-highlight);border-radius:var(--radius-md);font-size:var(--text-xs);color:var(--color-gold);margin-bottom:var(--space-4);">${pending} transaction${pending!==1?'s':''} not yet reviewed will be excluded.</div>` : ''}
+        <div class="export-preview">${preview}</div>
+        <div style="display:flex;gap:var(--space-3)">
+          <button class="btn btn-primary" onclick="downloadCSV()">
+            <i data-lucide="download" style="width:16px;height:16px;"></i> Download CSV
+          </button>
+          <button class="btn btn-ghost" onclick="copyCSV()">
+            <i data-lucide="copy" style="width:16px;height:16px;"></i> Copy
+          </button>
+        </div>
+        <div class="export-meta">${reviewed.length} transactions · ${new Date().toLocaleDateString('en-US', {month:'long',year:'numeric'})}</div>
+      </div>
+      <div class="export-box">
+        <div class="export-title">D1 Schema Reference</div>
+        <div class="export-desc">Drop this into your Cloudflare D1 migration. The Worker syncs Mercury → this table nightly. The export endpoint queries reviewed=1 only.</div>
+        <div class="export-preview">CREATE TABLE transactions (
+  id TEXT PRIMARY KEY,
+  created_at TEXT NOT NULL,
+  posted_at TEXT,
+  amount REAL NOT NULL,
+  counterparty TEXT,
+  description TEXT,
+  category TEXT DEFAULT 'uncategorized',
+  type TEXT CHECK(type IN (
+    'income','expense','draw','contribution'
+  )),
+  invoice_ref TEXT,
+  reviewed INTEGER DEFAULT 0,
+  mercury_memo TEXT,
+  tags TEXT,
+  notes TEXT,
+  qb_exported INTEGER DEFAULT 0,
+  qb_exported_at TEXT
+);</div>
+      </div>
+    </div>
+  `;
+}
+
+// ── Drawer ──────────────────────────────────────────────────────────────────
+function openDrawer(id) {
+  const t = state.transactions.find(x => x.id === id);
+  if (!t) return;
+  state.drawerTxn = id;
+  const cat = getCat(t.category);
+  document.getElementById('drawerContent').innerHTML = `
+    <div id="drawerTitle" class="drawer-title">${t.counterparty}</div>
+    <div class="detail-grid">
+      <div class="detail-field"><div class="detail-field-label">Date</div><div class="detail-field-value">${fmtDate(t.posted_at)}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Amount</div><div class="detail-field-value" style="color:${t.amount>=0?'var(--color-success)':'var(--color-error)'}">${fmtAmt(t.amount)}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Mercury ID</div><div class="detail-field-value" style="font-size:11px;color:var(--color-text-muted)">${t.id}</div></div>
+      <div class="detail-field"><div class="detail-field-label">Status</div><div class="detail-field-value">${t.reviewed ? '<span class="badge badge-reviewed">Reviewed</span>' : '<span class="badge badge-pending">Needs Review</span>'}</div></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="drawer-desc">Description (Mercury memo)</label>
+      <input class="form-input" id="drawer-desc" type="text" value="${t.description}" readonly style="color:var(--color-text-muted);">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="drawer-cat">Category</label>
+        <select class="form-input" id="drawer-cat">
+          ${QB_CATEGORIES.map(c => `<option value="${c.id}" ${c.id === t.category ? 'selected' : ''}>${c.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="drawer-type">Type</label>
+        <select class="form-input" id="drawer-type">
+          ${['income','expense','draw','contribution'].map(ty => `<option value="${ty}" ${ty===t.type?'selected':''}>${ty}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="drawer-invoice">Invoice Ref (optional)</label>
+      <input class="form-input" id="drawer-invoice" type="text" value="${t.invoice_ref || ''}" placeholder="INV-XXX">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="drawer-notes">Notes (CPA context)</label>
+      <input class="form-input" id="drawer-notes" type="text" value="${t.notes || ''}" placeholder="e.g. 30% business use">
+    </div>
+    <div class="drawer-actions">
+      <button class="btn btn-primary" onclick="saveDrawer(true)">
+        <i data-lucide="check" style="width:16px;height:16px;"></i> Approve
+      </button>
+      <button class="btn btn-ghost" onclick="saveDrawer(false)">Save without approving</button>
+    </div>
+  `;
+  document.getElementById('txnDrawer').classList.add('open');
+  lucide.createIcons();
+}
+
+function closeDrawer(e) {
+  if (e.target === document.getElementById('txnDrawer') || !e) {
+    document.getElementById('txnDrawer').classList.remove('open');
+  }
+}
+
+function saveDrawer(approve) {
+  const id = state.drawerTxn;
+  const t = state.transactions.find(x => x.id === id);
+  if (!t) return;
+  t.category = document.getElementById('drawer-cat').value;
+  t.type = document.getElementById('drawer-type').value;
+  t.invoice_ref = document.getElementById('drawer-invoice').value || null;
+  t.notes = document.getElementById('drawer-notes').value || null;
+  if (approve) t.reviewed = 1;
+  document.getElementById('txnDrawer').classList.remove('open');
+  render();
+}
+
+// ── Export ──────────────────────────────────────────────────────────────────
+function buildCSV() {
+  const reviewed = state.transactions.filter(x => x.reviewed).sort((a,b) => a.posted_at.localeCompare(b.posted_at));
+  const lines = reviewed.map(t => {
+    const cat = getCat(t.category);
+    const desc = `${t.counterparty} - ${t.description}`.replace(/,/g, ';');
+    return `${fmtDateQB(t.posted_at)},${desc},${t.amount.toFixed(2)},${cat.qb}`;
+  });
+  return ['Date,Description,Amount,Category', ...lines].join('
+');
+}
+
+function downloadCSV() {
+  const csv = buildCSV();
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'riftroot-ledger-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+function copyCSV() {
+  navigator.clipboard.writeText(buildCSV()).then(() => {
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;"></i> Copied';
+    lucide.createIcons();
+    setTimeout(() => { btn.innerHTML = orig; lucide.createIcons(); }, 1500);
+  });
+}
+
+// ── Sync simulation ──────────────────────────────────────────────────────────
+function simulateSync() {
+  const btn = document.getElementById('syncBtn');
+  btn.innerHTML = '<i data-lucide="loader-2" style="width:14px;height:14px;animation:spin 1s linear infinite;"></i> Syncing';
+  lucide.createIcons();
+  setTimeout(() => {
+    btn.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;"></i> Synced';
+    lucide.createIcons();
+    setTimeout(() => { btn.innerHTML = '<i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Sync'; lucide.createIcons(); }, 2000);
+  }, 1200);
+}
+
+function filterSet(f) {
+  state.filter = f;
+  render();
+}
+
+// ── Render ──────────────────────────────────────────────────────────────────
+function render() {
+  const content = document.getElementById('mainContent');
+  const views = { dashboard: renderDashboard, transactions: renderTransactions, categories: renderCategories, export: renderExport };
+  content.innerHTML = (views[state.view] || renderDashboard)();
+  lucide.createIcons();
+}
+
+// ── Theme toggle ──────────────────────────────────────────────────────────
+(function(){
+  const r = document.documentElement;
+  let d = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-theme', d);
+  const toggle = document.querySelector('[data-theme-toggle]');
+  if (toggle) toggle.addEventListener('click', () => {
+    d = d === 'dark' ? 'light' : 'dark';
+    r.setAttribute('data-theme', d);
+    toggle.setAttribute('aria-label', 'Switch to ' + (d === 'dark' ? 'light' : 'dark') + ' mode');
+  });
+})();
+
+// Spin animation
+const style = document.createElement('style');
+style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+document.head.appendChild(style);
+
+// Keyboard support for txn cards
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { document.getElementById('txnDrawer').classList.remove('open'); }
+});
+
+render();
+</script>
+</body>
+</html>
