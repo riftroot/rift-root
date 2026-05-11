@@ -54,7 +54,114 @@
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <!-- Crawler-visible fallback content. Replaced by React on hydrate.
+         Text mirrors the rendered components in /components/*.jsx — do not
+         edit one without the other. -->
+    <noscript>
+      <style>
+        .nojs-shell { max-width: 880px; margin: 0 auto; padding: 32px 20px 80px;
+          font-family: ui-monospace, "JetBrains Mono", monospace; color: #d6d6dc;
+          background: #0A0A0B; line-height: 1.55; }
+        .nojs-shell h1, .nojs-shell h2 { font-family: "Instrument Serif", Georgia, serif;
+          color: #fff; letter-spacing: -0.01em; }
+        .nojs-shell h1 { font-size: 36px; margin: 0 0 12px; }
+        .nojs-shell h2 { font-size: 22px; margin: 32px 0 8px; }
+        .nojs-shell h3 { font-size: 15px; margin: 18px 0 4px; color: #d8b4fe;
+          letter-spacing: 0.06em; text-transform: uppercase; }
+        .nojs-shell a { color: #22D3EE; }
+        .nojs-shell .meta { color: #8B8B95; font-size: 12px; letter-spacing: 0.18em;
+          text-transform: uppercase; }
+        .nojs-shell ul { padding-left: 18px; }
+        .nojs-shell hr { border: 0; border-top: 1px solid #2a2a32; margin: 28px 0; }
+      </style>
+      <main class="nojs-shell">
+        <p class="meta">Rift Root LLC · Est. 2026 · Northern Colorado · v0.1 · Bootstrap · Not seeking VC</p>
+
+        <h1>Near-infinite velocity for teams without large-firm resources.</h1>
+        <p>Erebus Edge is operating infrastructure for a one-person systems shop — a cost-optimized, model-agnostic execution mesh built agentic-first by Rift Root LLC, so the operator stays at the level where humans matter: decisions, taste, and direction.</p>
+
+        <hr />
+
+        <h2>01 / The thesis — horizontal scale, agentic-first</h2>
+        <p>Velocity is unlocked by horizontal scale, shaped by an agentic-first spine. Big firms throw headcount at the problem. Rift Root deploys stateless workers, edge runtimes, and ephemeral containers — Fly.io placement, Cloudflare workers, sandboxed execution — and lets the agentic spine do the coordination work that headcount was covering.</p>
+        <ul>
+          <li><b>01 Ingest</b> — Plan or spec enters. Thin-sliced into tasks with explicit schema: relationships, priorities, blockers.</li>
+          <li><b>02 Store</b> — Agentic-first task store. Not a ticketing tool. Self-healing. HITL escalation trends toward zero.</li>
+          <li><b>03 Route</b> — MAB selects model × prompt path per task type. Cheap-tier first. Winners reinforce. Losers prune.</li>
+          <li><b>04 Execute</b> — Stateless workers. Edge runtimes. Sandboxed containers. Scale-to-zero on idle. Scale-to-thousands on demand.</li>
+          <li><b>05 Cache</b> — Right-sized context. Nothing computed twice. Feeds back into ingest so the system remembers.</li>
+        </ul>
+
+        <h2>02 / Hostile Network — architecture, hostile-network-first</h2>
+        <p>Built for the network that blocks everything. Most AI tooling assumes unconstrained outbound access to provider APIs. In a firewalled enterprise, air-gapped environment, or regulated network, that assumption breaks completely. Erebus Edge is built for exactly that condition: keys stay server-side in a KV vault, zero-trust auth through Cloudflare Access gates every surface, and the only traffic crossing the perimeter is webhook ingest.</p>
+        <p><b>System shape:</b> 100+ HTTP endpoints across control + execution tiers · 5-layer architecture (perimeter through observability) · 3 vector indices · 2 SQL stores · 11 stateless task handlers.</p>
+        <h3>Three constraints</h3>
+        <ul>
+          <li><b>No outbound provider calls from client processes.</b> LLM provider keys live exclusively in a server-side KV vault scoped to the control plane worker. The execution tier never receives, caches, or transmits credentials.</li>
+          <li><b>Cloudflare Access on every surface.</b> Admin endpoints, webhook receivers, the coordinator API, and operator dashboards all sit behind Cloudflare Access policies enforced at the edge.</li>
+          <li><b>Webhook-only inbound.</b> The only path into the system is signed webhooks from an allowlist: GitHub, Linear, and CI providers. HMAC-SHA256 verified, 5-minute dedup TTL, no polling loop.</li>
+        </ul>
+
+        <h2>03 / Erebus Edge — six design pillars</h2>
+        <p>Stacked multi-armed bandit systems reward against total end-to-end SWU. Each task type and model is trained on prompt optimization, batch queueing, layered caches, compositors, and x-driven approaches — all tuned and reinforced for quality, self-healing, and capability expansion.</p>
+        <ul>
+          <li><b>α Reward Shaping</b> — Stacked MABs train on E2E SWU. Every task type, every model, every prompt path competes — winners get reinforced, losers get pruned.</li>
+          <li><b>β Cache Topology</b> — Cache-in-model, local cache, queue cache. Batch-queued API calls with deduped fingerprints. The right answer never gets computed twice.</li>
+          <li><b>γ Compositor Bandits</b> — X-driven work flows through compositor bandits that pick the best driven approach for each task class — and run shadow operations to explore variants before committing.</li>
+          <li><b>δ Sandbox Validation</b> — Every output runs through an isolated sandbox before promotion. Self-healing kicks in on failure — re-route, re-prompt, re-decompose.</li>
+          <li><b>ε Horizontal Scale</b> — Cloud-native serverless workers, edge runtimes, ephemeral containers. Scale-to-zero on idle, scale to thousands on demand.</li>
+          <li><b>ζ Model-Agnostic</b> — No vendor lock. The bandit chooses what's cheapest-per-quality this minute. Tomorrow's model plugs in as a new arm.</li>
+        </ul>
+
+        <h2>05 / Compositor economics — live evidence</h2>
+        <p>Representative 5-task replay routed through the compositor:</p>
+        <ul>
+          <li><b>48.3×</b> cheaper than all-Opus baseline — $0.013 actual vs $0.642 baseline on the same 5-task workload.</li>
+          <li><b>78%</b> token savings vs baseline — 5,610 tokens reused, 1,850 billed (own-cache + provider-cache).</li>
+          <li><b>0.91</b> quality vs 0.95 all-Opus — −4% quality delta, SWU confirmed, reward score 0.86.</li>
+          <li><b>100%</b> first-pass success · <b>0/5</b> Opus selections · <b>60%</b> batch lane share.</li>
+        </ul>
+        <p>Full event replay: <a href="https://github.com/riftroot/erebus-edge/blob/main/events-sample.json">github.com/riftroot/erebus-edge · events-sample.json</a></p>
+
+        <h2>06 / Beyond generation — execution loop, not generation</h2>
+        <p>Erebus Edge is not generation. It is the execution loop around generation. RAG and CAG solve retrieval and context management; they do not solve orchestration, cost optimization, failure recovery, or cross-task learning. The MAB is a learning system that accumulates reward signal across every task class, every model arm, every cost tier. Vibe coding produces an output; Erebus produces a validated, deployed artifact with a logged reward signal.</p>
+
+        <h2>07 / Why this exists</h2>
+        <p>Erebus Edge is not for sale. It is the substrate Rift Root uses to do its own work faster than anyone else can. Rift Root is a one-person systems shop, and Erebus Edge is the operating infrastructure run on engagements. The compounding asset is the system of MAB data — real-world, production-hardened evidence of what works and what doesn't, sliced by task type, model, provider, and x-driven approach.</p>
+        <ul>
+          <li>Not academic. No paper. No grant cycle. Production-first.</li>
+          <li>Not research. The system has to ship work today.</li>
+          <li>Not open-source — yet. Code stays private; the data compounds.</li>
+          <li>Not seeking VC. No dilution. No board. Resources, not capital.</li>
+        </ul>
+
+        <h2>08 / About the operator — Adam, Northern Colorado</h2>
+        <p>The thesis behind Rift Root is simple: the right system absorbs the friction so the operator does not have to. That idea was formed in an Army S6 shop — sole IT support for a battalion of soldiers who needed their accounts, networks, and workstations working, especially at 0200 before a training event. Nobody there cared about elegance. They cared about uptime. That is still the only metric that matters.</p>
+        <p>The years since have run through process improvement, dev coordination as a translation layer between contractors and operations, cloud infrastructure engineering, and cross-domain system-of-systems architecture. Erebus Edge is that question applied to AI execution infrastructure. It is being built, run, and broken by one person in Northern Colorado before it touches anyone else's environment.</p>
+        <p><b>Role:</b> Founder · Sole Operator · <b>Locus:</b> Northern Colorado · <b>Domain:</b> Execution Infra · MAB Routing · <b>Prior:</b> S6 · Dev-Coord · Cloud · SOS-Arch · <b>Posture:</b> Bootstrapped · No VC · No Board.</p>
+
+        <h2>09 / The ask — resources that accelerate</h2>
+        <p>Not seeking VC. Seeking resources that accelerate. Rift Root is bootstrapped by design. Cash dilutes; resources compound. Compute credits, inference budgets, bare-metal access, storage, tooling, and design partners — anything that shortens the loop between hypothesis and validated output.</p>
+        <ul>
+          <li>Compute credits — edge runtimes, serverless workers, sandbox burst</li>
+          <li>Inference credits — across multi-vendor model arms</li>
+          <li>Bare-metal inference — silicon diversity the cloud abstracts away</li>
+          <li>Hardware diversity — enriches MAB convergence data across the pool</li>
+          <li>Storage + queue — cache topology + batch ingestion</li>
+          <li>Egress allowance — cross-cloud compositor traffic</li>
+          <li>Design partners — real workloads that stress-test Erebus Edge against production conditions</li>
+        </ul>
+
+        <h2>10 / Get in touch</h2>
+        <p>Email: <a href="mailto:adam@riftroot.com">adam@riftroot.com</a><br />
+           GitHub: <a href="https://github.com/riftroot/erebus-edge">github.com/riftroot/erebus-edge</a></p>
+
+        <hr />
+        <p class="meta">Rift Root LLC · Northern Colorado · 2026 · All systems nominal</p>
+      </main>
+    </noscript>
+  </div>
   <div id="rr-update-toast">new version available · tap to reload</div>
 
   <script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
